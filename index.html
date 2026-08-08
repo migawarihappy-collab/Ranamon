@@ -513,22 +513,35 @@
     };
 
     // 世代ごとのリスト定義
-    const ADULT_DIGIMONS = ['lanamon', 'teslajerrymon'];
-    const PERFECT_DIGIMONS = ['karumaramon', 'tetismon'];
-    const ULTIMATE_DIGIMONS = ['emarmeymon', 'kutiramon'];
+    const CHILD_DIGIMONS = ['kaimon', 'jerrymon', 'ganimon', 'gizamon'];
+    const ADULT_DIGIMONS = ['gesomon', 'teslajerrymon', 'ebidramon', 'lanamon'];
+    const PERFECT_DIGIMONS = ['hmon', 'tetismon', 'mdmon', 'karumaramon'];
+    const ULTIMATE_DIGIMONS = ['marine', 'afmon', 'kutiramon', 'emarmeymon'];
 
     // 表示名のマップ
     const DIGIMON_NAMES = {
         zurumon: "ズルモン",
         pagumon: "パグモン",
-        gizamon: "ギザモン",
+        // 成長期
+        kaimon: "シャコモン",
         jerrymon: "ジェリーモン",
-        lanamon: "ラーナモン",
+        ganimon: "ガニモン",
+        gizamon: "ギザモン",
+        // 成熟期
+        gesomon: "ゲソモン",
         teslajerrymon: "テスラジェリーモン",
-        karumaramon: "カルマーラモン",
+        ebidramon: "エビドラモン",
+        lanamon: "ラーナモン",
+        // 完全体
+        hmon: "ハンギョモン",
         tetismon: "テティスモン",
-        emarmeymon: "エンシェントマーメイモン",
-        kutiramon: "クティーラモン"
+        mdmon: "マリンデビモン",
+        karumaramon: "カルマーラモン",
+        // 究極体
+        marine: "マリンエンジェモン",
+        afmon: "アンフィモン",
+        kutiramon: "クティーラモン",
+        emarmeymon: "エンシェントマーメイモン"
     };
 
     // AI用の設定テキスト（性格・キャラクター性）
@@ -536,13 +549,21 @@
         zurumon: "超悪質のコンピュータウイルスとコンピューターを悪用する人間の負の念が融合して生まれたスライムのような粘液状のボディを持つ幼年期Ⅰデジモン。体をうねうね動かしながら意思表示をします。体を構成する物質は毒性が強く、口からは強烈な毒を帯びた泡を吐き出す。",
         pagumon: "ズルモンの進化系、幼年期Ⅱの小型デジモン。頭の耳のような部分を器用に動かし羽ばたかせて少しだけ浮けるという特技があります。",
         gizamon: "カエルのような体型に背中に4枚の刃の背鰭と手足に水を掻くための鰭がついた水棲哺乳類型デジモンの成長期。地上での生活よりも水中での生活に適しており、鰭と強靭な後ろ足で水中をすばやく泳ぎまわれるが、地上での移動はカエルのように飛び跳ねながら動き回る事しかできず、さらに地上では非常に臆病だが水中では本来の獰猛さを発揮する。必殺技は鋭利な刃物のような背鰭で相手に襲い掛かる「スパイラルエッジ」。",
+        kaimon: "硬い貝殻に覆われた水棲型デジモン。普段は貝殻の中に身を隠しているが、内面は好奇心旺盛で人懐っこい性格。必殺技は水圧で貝殻を打ち出す『ブラックパール』。",
+        ganimon: "甲殻類特有の硬い外骨格と強いハサミを持つ甲殻類型デジモン。性格は気短で怒りっぽいが、仲間想いな一面もある。必殺技はハサミで切断する『シザーズエクスキューション』。",
         jerrymon: "クラゲのようなプニプニとした頭を持つ軟体型デジモン。全身が柔軟で体を頭の中に収納することもでき、通常は頭だけの状態で生活している。頭だけの時は風に吹かれただけでも飛ぶほどの軽さ。キレイな環境や行為を好み、汚れた行いを見ると怒りで体を出して戦闘モードになる。光線銃に変形させた触手の先から静電気砲を飛ばす麻痺攻撃の『ビビサンダー』、拳に電撃をまとうパンチ技『ボルトナックル』、宙返りしながら敵を蹴り上げる『スパイラルキック』が得意技だ。",
         lanamon: "伝説の十闘士の一人が残した水のヒューマンスピリットで進化したハイブリッド体。半漁人の女子のような姿をしてる。気象予報システム内の海洋部分をデータに取り込んだ為か喜怒哀楽が激しい。必殺技は豪雨を一点に収束させ放つ『レインストリーム』と酸性雨で相手を溶かす『ジェラシーレイン』",
+        ebidramon: "エビのような姿をした巨大な水棲竜型デジモン。気性が荒く獰猛で、巨大な2本のハサミと強靭な尾で襲いかかる。必殺技は２本のはさみで襲いかかる『ツインネプチューン』。",
+        gesomon: "白いイカのような姿をした水棲軟体型デジモン。知能が高く手足の触手を器用に扱う。必殺技は口から毒墨を吐き出す『デッドリーシェード』。",
         teslajerrymon: "刺激と快感を求めて、金網デスマッチなどの格闘技のデータを吸収して成長した成熟期のデジモン。電撃技がさらに強化され、繰り出す格闘には空手やプロレスなどから応用した技がさらに多くなった。体の柔らかさを活かして敵の攻撃も軽々といなす。必殺技は、手のひらに溜めた電撃『フィサリスト』を急所に打ち込む。さらに、身体から伸ばした高電圧の帯で敵をビリビリ刺激的にお仕置きする『パニッシューネ』、電撃を体に纏い回転しながら体当たりする『ボルスプライト』がある。",
         karumaramon: "伝説の十闘士の一人が残した水のビーストスピリットで進化したハイブリッド体。半人半獣の姿をしており魔女のような上半身に巨大なイカの触手のような下半身をしており不気味で強力な水棲型デジモン。必殺技は胴部を硬化させドリルのように回転させて敵にぶつける「タイタニックチャージ」と口から溶解性の墨を吹く『ネーロコルソ』。",
+        hmon: "人間のような手足を持つ水棲獣人型デジモン。ダイビングスーツを着たような独特な見た目をしており水中戦のプロ。必殺技は『ストライクフィッシング』。",
+        mdmon: "深い深海に住むデビモンの亜種。勝つためには手段を選ばず、相手が戦意を喪失しても攻撃の手をゆるめない。背中から生えた二本の触手は、それぞれ意思を持っていて、獲物を取り合って勝手に行動する。必殺技は口から猛毒の墨を発射する『ギルティブラック』。",
         tetismon: "デジモンの発祥の地“ネットの海”の最も深い海溝で発見された記録がある、女性の姿をした水棲獣人型の完全体デジモン。とても広大な自身のテリトリーに安寧をもたらし、喧噪で脅かすデジモンには一瞬にして詰め寄り鉄槌を下す。テリトリーを荒らすものに慈悲はないが、救助を求めて入ったデジモンには優しく接し安全な場所まで導く、弱きを助け強きを挫く精神を持つ。掌に電撃を溜めることで拳を飛ばす『ビリースマッシャー』、蹴り上げた敵に組み合わせた電流の両拳を振り下ろす『ハンマーサンダー』や、相手との空間を消失させて瞬間転移する『アドゥワールド』で侵略者を排除する。さらに触手から様々な薬を生成して流し込む『ドクテアーゼ』は、味方には傷の治癒や一時的な力のブースト、敵ならば劇毒で内部から分解し死に至らしめる。",
         emarmeymon: "古代のネットの海を支配していた伝説の十闘士の一体である究極体デジモン。美しく気高き海の女神です。必殺技は「グレートトロンバ」。",
-        kutiramon: "ちっこい見た目だが深海の邪神のような禍々しくも圧倒的な神秘の力を秘めた深海系究極体デジモン。外見はマリンエンジェモンに酷似しているが、目つきが非常に悪くて継ぎ接ぎのように塞がれた口、首にはホーリーリングではなく黒い首輪を巻き付け、悪魔のような翼が生えていおり、マリンエンジェモンとは全く真逆の容姿を持つ。また胸のドクロマークがチャームポイント。必殺技は口を大きく開いてムチのようにしなる三本の長い舌で攻撃する『バッカルラッシュ』と激しい渦潮を発生させ、ドリルのように相手の身体を削ぐ『アクアグラインダー』"
+        marine: "小さなマスコットのような外見に反して滅多にその姿を見ることのできない、ネットの海に棲む妖精型デジモン。エンジェモンの名前を持っているが、生態系としてはエンジェモン系とは全く別の種族である。マリンエンジェモンの首についているリングはホーリーリングと呼ばれ、テイルモンやエンジェウーモンなども付けていることから聖なるデジモンと何か関係があると思われる。そこに刻まれている文字は今だ解明されていない。基本的に戦闘は好まないが、必殺技である『オーシャンラブ』はあらゆる敵の戦意を喪失させ、結果的に勝利をおさめることになる。",
+        afmon: "広大な“ネットの海”のどこでも回遊し、様々な海生デジモンと縁を結ぶサイボーグ型デジモン。全身を覆うボディースーツにより超高圧層への潜水を可能とし天使型デジモンや神人型デジモンより、ネットの海における悪と判断した者を断罪することを許されている。戦いが始まれば普段の陽気さは荒れ狂う海のように一変し、罪人へ裁きの一撃をお見舞いする。必殺技は、拳から凍気を撃ち出し相手を凍結させる『クリスタルフリーザー』、水平に振るった手から飛び出す超高圧水のカッター『アクアザンバー』、足に電撃を纏わせてキックを叩き込む『ライバーンブレイク』がある。また数体のクラゲユニットを展開して電磁シールド『アンブレディフェンダー』を形成し、自分や仲間を守ることができる。",
+        kutiramon: "小さなマスコットのような外見に反してネットの海の深部に生息し、暗い海の中で胸のドクロ模様だけが不気味に浮かび上がって見えることから別名「海の死霊」と呼ばれている。自ら戦うことに積極的ではなく、自身より程度の低い水棲デジモンを洗脳して使役する。その姿形とめったに見られない存在であることから、マリンエンジェモンと類似している点も多いが、関係性は今のところ不明である。深海の暗闇のような底知れぬ恐怖のオーラで戦意を奪う必殺技『オーシャンヘル』は、時にこれを受けたデジモンをクティーラモンの傀儡に成り下がらせる。口を大きく開いて鞭のようにしなる三本の長い舌で攻撃する『バッカルラッシュ』と、激しい渦潮を発生させ、ドリルのように相手の身体を削ぐ『アクアグラインダー』は、その小さな体躯からは想像し得ない破壊力を持つ。"
     };
 
     const PERSONALITIES = {
@@ -593,7 +614,7 @@
     function getNextEvolutionThreshold() {
         if (currentForm === 'zurumon') return 10;
         if (currentForm === 'pagumon') return 20;
-        if (['gizamon', 'jerrymon'].includes(currentForm)) return 30;
+        if (CHILD_DIGIMONS.includes(currentForm)) return 30; // ★修正：全成長期デジモンに対応★
         if (ADULT_DIGIMONS.includes(currentForm)) return 40;
         if (PERFECT_DIGIMONS.includes(currentForm)) return 70;
         if (ULTIMATE_DIGIMONS.includes(currentForm)) return 80;
@@ -868,7 +889,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         const digimonGifName = `${currentForm}_${emotionKey}.gif`;
         actionDigimonImg.src = digimonGifName;
-        actionDigimonImg.classList.add('facing-right'); // ★お世話アクション中は右向きにする★
+        actionDigimonImg.classList.add('facing-right'); // お世話アクション中は右向きにする
         actionEffectImg.src = actionGifName;
 
         actionContainer.style.display = 'flex';
@@ -879,7 +900,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         setTimeout(() => {
             actionContainer.style.display = 'none';
-            actionDigimonImg.classList.remove('facing-right'); // ★アクション終了時に向きを解除★
+            actionDigimonImg.classList.remove('facing-right'); // ★修正：アクション終了時に向きを解除★
 
             const normalGifName = `${currentForm}_normal.gif`;
             digimonImage.src = normalGifName;
@@ -983,6 +1004,44 @@ ${pInfo ? pInfo.prompt : ""}
         }
     }
 
+    // 感情値から進化先を決定する関数
+    function getNextFormByEmotion(currentStage) {
+        const dominant = getDominantEmotion(); // 最も高い感情値のキーを呼び出し
+        
+        // 同率や0などで判定できない場合はデフォルトで 'happy'（または 'normal'）にする
+        const emotion = dominant || 'happy';
+
+        // 世代ごとの感情別進化マップ
+        const evolutionMap = {
+            child: {
+                normal: 'kaimon',
+                happy: 'jerrymon',
+                angry: 'ganimon',
+                sad: 'gizamon'
+            },
+            adult: {
+                normal: 'gesomon',
+                happy: 'teslajerrymon',
+                angry: 'ebidramon',
+                sad: 'lanamon'
+            },
+            perfect: {
+                normal: 'hmon',
+                happy: 'tetismon',
+                angry: 'mdmon',
+                sad: 'karumaramon'
+            },
+            ultimate: {
+                normal: 'marine',
+                happy: 'afmon',
+                angry: 'kutiramon',
+                sad: 'emarmeymon'
+            }
+        };
+
+        return evolutionMap[currentStage][emotion];
+    }
+
     // --- 進化・転生判定ロジック ---
     function getDominantEmotion() {
         let maxCount = -1;
@@ -1007,50 +1066,31 @@ ${pInfo ? pInfo.prompt : ""}
     function checkEvolutionProgress() {
         if (isPerformingAction) return;
 
-        // 1. ズルモン ➔ パグモン
+        // 1. ズルモン ➔ パグモン (会話10回)
         if (currentForm === 'zurumon' && talkCount >= 10) {
             executeEvolution('pagumon', 'ズルモンは パグモン に進化した！');
         }
-        // 2. パグモン ➔ 成長期
+        // 2. パグモン ➔ 成長期 (会話20回)
         else if (currentForm === 'pagumon' && talkCount >= 20) {
-            const winning = getDominantEmotion();
-            let nextForm = 'jerrymon';
-            if (winning === 'angry' || winning === 'sad') {
-                nextForm = 'gizamon';
-            } else if (!winning) {
-                nextForm = Math.random() < 0.5 ? 'gizamon' : 'jerrymon';
-            }
+            const nextForm = getNextFormByEmotion('child');
             executeEvolution(nextForm, `パグモンは ${DIGIMON_NAMES[nextForm]} に進化した！`);
         }
-        // 3. 成長期 ➔ 成熟期
-        else if (['gizamon', 'jerrymon'].includes(currentForm) && talkCount >= 30) {
-            const winning = getDominantEmotion();
-            let nextForm = (currentForm === 'gizamon') ? 'lanamon' : 'teslajerrymon';
-            if (winning === 'angry') nextForm = 'lanamon';
-            if (winning === 'happy') nextForm = 'teslajerrymon';
+        // 3. 成長期 ➔ 成熟期 (会話30回)
+        else if (CHILD_DIGIMONS.includes(currentForm) && talkCount >= 30) {
+            const nextForm = getNextFormByEmotion('adult');
             executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に進化した！`);
         }
-        // 4. 成熟期 ➔ 完全体
+        // 4. 成熟期 ➔ 完全体 (会話40回)
         else if (ADULT_DIGIMONS.includes(currentForm) && talkCount >= 40) {
-            const winning = getDominantEmotion();
-            let nextForm = (currentForm === 'lanamon') ? 'karumaramon' : 'tetismon';
-            if (winning === 'angry' || winning === 'sad') nextForm = 'karumaramon';
-            if (winning === 'happy' || winning === 'normal') nextForm = 'tetismon';
-            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に進化した！`);
+            const nextForm = getNextFormByEmotion('perfect');
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に超進化した！`);
         }
-        // 5. 完全体 ➔ 究極体
+        // 5. 完全体 ➔ 究極体 (会話70回)
         else if (PERFECT_DIGIMONS.includes(currentForm) && talkCount >= 70) {
-            const winning = getDominantEmotion();
-            let nextForm = 'emarmeymon';
-            if (winning === 'angry' || winning === 'sad' || currentForm === 'karumaramon') {
-                nextForm = 'kutiramon';
-            }
-            if (winning === 'happy' || winning === 'normal') {
-                nextForm = 'emarmeymon';
-            }
-            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に極進化した！`);
+            const nextForm = getNextFormByEmotion('ultimate');
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に究極進化した！`);
         }
-        // 6. 究極体 ➔ ズルモンへ転生
+        // 6. 究極体 ➔ 転生 (会話80回)
         else if (ULTIMATE_DIGIMONS.includes(currentForm) && talkCount >= 80) {
             rebirthToZurumon();
         }
