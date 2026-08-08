@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="水棲デジモントーク">
+
+    <title>デジモントーク - ディープセイバーズVer.</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&display=swap');
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #0b1a2d;
+        }
+        body {
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            width: 95%;
+            max-width: 450px;
+            height: 95%;
+            max-height: 700px;
+            background: #122b46;
+            border: 4px solid #00d2ff;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.4);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        /* ネームエントリー画面 */
+        .name-entry-screen {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #08111e;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+        .name-entry-box {
+            width: 90%;
+            border: 4px double #00d2ff;
+            padding: 30px 10px;
+            background: #0d1b2a;
+            text-align: center;
+        }
+        .name-entry-title {
+            font-size: 18px;
+            color: #00d2ff;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+        }
+
+        /* API設定 */
+        .api-setting {
+            margin-bottom: 5px;
+            font-size: 11px;
+            color: #88c0d0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: center;
+        }
+        .check-btn {
+            background: #17a2b8;
+            padding: 3px 8px;
+            font-size: 10px;
+            border: none;
+            color: #fff;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        select {
+            background: #0d1b2a;
+            color: #fff;
+            border: 2px solid #00d2ff;
+            padding: 3px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .bg-selector-container {
+            margin-bottom: 5px;
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 5px;
+            padding: 0 4px;
+        }
+        .user-info-container {
+            font-size: 12px;
+            color: #fff;
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+        .rename-btn, .status-btn {
+            background: #1c3d5a;
+            padding: 2px 6px;
+            font-size: 10px;
+            border: 1px solid #00d2ff;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .status-btn {
+            background: #00d2ff;
+            color: #000;
+            font-weight: bold;
+            border-color: #80e5ff;
+        }
+
+        /* ステータスモーダル */
+        .modal-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 10, 20, 0.85);
+            z-index: 150;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-box {
+            width: 85%;
+            background: #0d1b2a;
+            border: 4px double #00d2ff;
+            border-radius: 8px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: 'DotGothic16', sans-serif;
+            text-align: left;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 210, 255, 0.5);
+        }
+        .modal-title {
+            font-size: 16px;
+            color: #00d2ff;
+            text-align: center;
+            border-bottom: 2px dashed #1c3d5a;
+            padding-bottom: 6px;
+            margin-bottom: 12px;
+        }
+        .status-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+        .status-label { color: #88c0d0; }
+        .status-val { font-weight: bold; color: #fff; }
+
+        .emotion-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            background: #162a3f;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #1c3d5a;
+            margin: 8px 0 12px 0;
+        }
+        .emotion-item {
+            font-size: 12px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modal-close-btn {
+            display: block;
+            width: 100%;
+            padding: 6px;
+            background: #1c3d5a;
+            color: #fff;
+            border: 1px solid #00d2ff;
+            border-radius: 4px;
+            cursor: pointer;
+            text-align: center;
+            font-family: 'DotGothic16', sans-serif;
+            margin-top: 10px;
+        }
+
+        /* お世話コマンドエリア */
+        .care-panel {
+            display: flex;
+            justify-content: space-between;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+        .care-btn {
+            flex: 1;
+            padding: 6px 2px;
+            font-size: 10px;
+            font-family: 'DotGothic16', sans-serif;
+            background: #1c3d5a;
+            color: #fff;
+            border: 2px solid #3a6b8c;
+            border-radius: 4px;
+            cursor: pointer;
+            opacity: 0.3;
+            pointer-events: none;
+            transition: opacity 0.3s, background 0.2s;
+        }
+        .care-btn.active {
+            opacity: 1.0;
+            pointer-events: auto;
+            background: #007acc;
+            animation: pulseBtn 1s infinite alternate;
+        }
+        @keyframes pulseBtn {
+            0% { border-color: #fff; }
+            100% { border-color: #00d2ff; }
+        }
+
+        /* 表示エリア */
+        .digimon-box {
+            flex-grow: 1;
+            min-height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 8px;
+            border: 2px inset #1c3d5a;
+            background: #08111e; 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            transition: background 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 16x16ドット絵用のくっきり表示・拡大設定 */
+        .digimon-img {
+            height: 64px; /* 16px × 4倍サイズ */
+            width: auto;
+            object-fit: contain;
+            position: absolute;
+            bottom: 15px;
+            
+            /* ドット絵ぼやけ防止のための設定 */
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            image-rendering: -moz-crisp-edges;
+
+            animation: walkPatternLeft 8s infinite ease-in-out;
+            animation-delay: 0.1s;
+            transition: height 0.3s ease;
+        }
+
+        .digimon-img.adult-size {
+            height: 96px; /* 16px × 6倍サイズ（完全体・究極体など大型用） */
+        }
+
+        .action-container {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 10px;
+            gap: 20px;
+            background: rgba(0,20,40,0.3);
+        }
+        .action-digimon-img, .action-effect-img {
+            height: 64px;
+            object-fit: contain;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            transition: height 0.3s ease;
+        }
+
+        .action-digimon-img {
+            transform: scaleX(1); /* 基本は左向き */
+        }
+
+        .action-digimon-img.adult-size {
+            height: 96px;
+        }
+
+        /* ★左向き原点用の歩行アニメーション★ */
+        @keyframes walkPatternLeft {
+            0% { transform: translateX(0) scaleX(1); }           /* 左向きのまま停止 */
+            12.5% { transform: translateX(-60px) scaleX(1); }     /* 左に歩く */
+            25% { transform: translateX(-60px) scaleX(1); }      /* 左で停止 */
+            25.01% { transform: translateX(-60px) scaleX(-1); }  /* 右に向き直る */
+            37.5% { transform: translateX(0) scaleX(-1); }        /* 右に歩いて中央へ */
+            50% { transform: translateX(0) scaleX(-1); }          /* 中央で右向き停止 */
+            62.5% { transform: translateX(60px) scaleX(-1); }     /* 右に歩く */
+            75% { transform: translateX(60px) scaleX(-1); }      /* 右で停止 */
+            75.01% { transform: translateX(60px) scaleX(1); }    /* 左に向き直る */
+            87.5% { transform: translateX(0) scaleX(1); }         /* 左に歩いて中央へ */
+            100% { transform: translateX(0) scaleX(1); }        /* 中央で停止 */
+        }
+
+        .dialogue-box {
+            background: #08111e;
+            border: 2px solid #00d2ff;
+            padding: 8px 10px;
+            min-height: 70px;
+            text-align: left;
+            margin-bottom: 8px;
+            line-height: 1.4;
+            font-size: 14px; 
+            font-family: 'DotGothic16', sans-serif;
+        }
+        .input-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="password"] {
+            padding: 8px;
+            border: 2px solid #00d2ff;
+            background: #0d1b2a;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        input[type="text"] {
+            flex-grow: 1;
+        }
+        button {
+            padding: 8px 12px;
+            background: #00d2ff;
+            color: #000;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        #errorLog, #modelListLog {
+            position: absolute;
+            bottom: 10px;
+            left: 5%;
+            width: 90%;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 10px;
+            text-align: left;
+            display: none;
+            word-break: break-all;
+            white-space: pre-wrap;
+            box-sizing: border-box;
+            z-index: 110;
+        }
+        #errorLog { background: #400; color: #ff9999; }
+        #modelListLog { background: #1e3a1e; color: #99ff99; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ネームエントリー画面 -->
+    <div id="nameEntryScreen" class="name-entry-screen" style="display: none;">
+        <div class="name-entry-box">
+            <div class="name-entry-title">アナタノ ナマエ オシエテ！</div>
+            <div class="input-box" style="justify-content: center;">
+                <input type="text" id="nameInput" placeholder="アナタの名前" style="text-align: center; max-width: 200px;" onkeypress="if(event.key === 'Enter') saveName()">
+                <button onclick="saveName()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ステータスモーダル画面 -->
+    <div id="statusModal" class="modal-overlay" style="display: none;" onclick="closeStatusModal(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-title">📊 デジモンステータス</div>
+            <div class="status-row">
+                <span class="status-label">【 なまえ 】</span>
+                <span class="status-val" id="statName">ズルモン</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">【 せいかく 】</span>
+                <span class="status-val" id="statPersonality" style="color: #00d2ff;">素直</span>
+            </div>
+            <div class="status-row">
+                <span class="status-label">【 へんかまで 】</span>
+                <span class="status-val" id="statEvolutionCount" style="color: #00ffcc;">0 / 10</span>
+            </div>
+
+            <div style="font-size: 11px; color: #88c0d0; margin-top: 10px; margin-bottom: 4px;">【 かんじょうち 】</div>
+            <div class="emotion-grid">
+                <div class="emotion-item">
+                    <span style="color: #aaa;">信頼:</span>
+                    <span id="statNormal" style="color: #fff;">0</span>
+                </div>
+                <div class="emotion-item">
+                    <span style="color: #ff66aa;">歓喜:</span>
+                    <span id="statHappy" style="color: #ff66aa;">0</span>
+                </div>
+                <div class="emotion-item">
+                    <span style="color: #ff4444;">激情:</span>
+                    <span id="statAngry" style="color: #ff4444;">0</span>
+                </div>
+                <div class="emotion-item">
+                    <span style="color: #aa66ff;">感受:</span>
+                    <span id="statSad" style="color: #aa66ff;">0</span>
+                </div>
+            </div>
+
+            <button class="modal-close-btn" onclick="toggleStatusModal(false)">とじる</button>
+        </div>
+    </div>
+
+    <!-- APIキー設定 -->
+    <div class="api-setting">
+        <div>
+            <label for="apiKey">Gemini API Key: </label>
+            <input type="password" id="apiKey" placeholder="AIZA..." style="padding: 2px; font-size: 10px; width: 150px;" onchange="saveApiKey()">
+        </div>
+        <div>
+            <button class="check-btn" onclick="checkAvailableModels()">👉 キーで使えるモデルを調べる</button>
+        </div>
+        <div id="modelSelectContainer" style="display: none;">
+            <select id="modelSelect"></select>
+        </div>
+    </div>
+
+    <!-- 設定・情報エリア -->
+    <div class="bg-selector-container">
+        <div>
+            <label for="bgSelect">背景🌊: </label>
+            <select id="bgSelect" onchange="changeBackground()">
+                <option value="">なし</option>
+                <option value="mati.jpg">はじまりの町</option>
+                <option value="sima.jpg">ファイル島</option>
+                <option value="umi.jpg">ネットの海</option>
+                <option value="shinkai.jpg">深海エリア</option>
+                <option value="den.jpg">サイバー空間</option>
+            </select>
+        </div>
+        <div class="user-info-container">
+            <span>👤:<span id="userNameDisplay">---</span></span>
+            <button class="rename-btn" onclick="showNameEntry()">かえる</button>
+            <button class="status-btn" onclick="toggleStatusModal(true)">📊 ステータス</button>
+        </div>
+    </div>
+
+    <!-- お世話コマンドパネル -->
+    <div class="care-panel">
+        <button id="careMeal" class="care-btn" onclick="executeCare('happy', 5, 'eat_animation.gif', 'ごはんをもらって<span style=&quot;color: #ff66aa; font-weight: bold;&quot;>【歓喜】</span>の感情値が上がった！')">🍙 エサ</button>
+        <button id="careTrain" class="care-btn" onclick="executeCare('normal', 5, 'Training_animation.gif', 'トレーニングを頑張って<span style=&quot;color: #00ccff; font-weight: bold;&quot;>【信頼】</span>の感情値が上がった！')">💪 トレーニング </button>
+        <button id="careDefense" class="care-btn" onclick="executeCare('angry', 5, 'battle_animation.gif', 'ネットワークウィルスを撃退して<span style=&quot;color: #ff4444; font-weight: bold;&quot;>【激情】</span>の感情値が上がった！')">🛡️ ウイルス退治</button>
+        <button id="careData" class="care-btn" onclick="executeCare('sad', 5, 'deta_animation.gif', 'ネットワークデータ収集をして<span style=&quot;color: #aa66ff; font-weight: bold;&quot;>【感受】</span>の感情値が上がった！')">💻 収集</button>
+    </div>
+
+    <!-- デジモン表示エリア -->
+    <div class="digimon-box" id="digimonBox">
+        <img id="digimonImage" src="zurumon_normal.gif" alt="normal" class="digimon-img" loading="eager" onerror="this.src='normal.gif'">
+
+        <div id="actionContainer" class="action-container" style="display: none;">
+            <img id="actionDigimonImg" class="action-digimon-img" src="" alt="digimon">
+            <img id="actionEffectImg" class="action-effect-img" src="" alt="action">
+        </div>
+    </div>
+
+    <!-- セリフ窓 -->
+    <div class="dialogue-box">
+        <div style="font-size: 11px; color: #00d2ff; margin-bottom: 3px;">
+            <span id="digimonName">ズルモン</span>
+            <span id="personalityDisplay" style="font-size: 10px; color: #88c0d0; margin-left: 5px;"></span>
+            <span id="careCounterDisplay" style="font-size: 10px; color: #00ffcc; float: right;">お世話まであと: 0/5</span>
+        </div>
+        <div id="dialogueText"></div>
+    </div>
+
+    <!-- 入力エリア -->
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="メッセージを入力..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button id="sendBtn" onclick="sendMessage()">送信</button>
+    </div>
+
+    <div id="modelListLog"></div>
+    <div id="errorLog"></div>
+</div>
+
+<script>
+    // --- 状態変数 ---
+    let talkCount = 0;          
+    let careCount = 0;          
+    let isPerformingAction = false; 
+    let currentForm = 'zurumon'; 
+    let currentPersonalityKey = '';
+    let emotionCounts = {
+        happy: 0,
+        angry: 0,
+        sad: 0,
+        normal: 0
+    };
+
+    // 世代ごとのリスト定義
+    const ADULT_DIGIMONS = ['lanamon', 'teslajerrymon'];
+    const PERFECT_DIGIMONS = ['karumaramon', 'tetismon'];
+    const ULTIMATE_DIGIMONS = ['emarmeymon', 'kutiramon'];
+
+    // 表示名のマップ
+    const DIGIMON_NAMES = {
+        zurumon: "ズルモン",
+        pagumon: "パグモン",
+        gizamon: "ギザモン",
+        jerrymon: "ジェリーモン",
+        lanamon: "ラーナモン",
+        teslajerrymon: "テスラジェリーモン",
+        karumaramon: "カルマーラモン",
+        tetismon: "テティスモン",
+        emarmeymon: "エンシェントマーメイモン",
+        kutiramon: "クティーラモン"
+    };
+
+    // AI用の設定テキスト（性格・キャラクター性）
+    const DIGIMON_DETAILS = {
+        zurumon: "生まれたての粘液状のボディを持つ幼年期Ⅰデジモン。体をうねうね動かしながら意思表示をします。",
+        pagumon: "いじわるで生意気な性格をした幼年期Ⅱの小型デジモン。頭の耳のような部分を器用に動かします。",
+        gizamon: "背中に鋭いヒレを持つ背びれ恐竜のような成長期デジモン。少し獰猛でアクティブな性格です。必殺技は「スパイラルカッター」。",
+        jerrymon: "頭部がクラゲのようなぷにぷにボディを持つ成長期デジモン。女王様気質で生意気ですが、どこか愛くるしい性格です。必殺技は「ボルトチャージ」。",
+        lanamon: "水の闘士の魂を宿した成熟期のハイブリッド体デジモン。アイドル的で勝ち気、ちょっとナルシストな性格をしています。必殺技は「ドレイン・ラッシュ」。",
+        teslajerrymon: "ジェリーモンが進化した、しなやかでエレガントな身体と電撃を操る成熟期デジモン。高飛車で知的なお姉様口調です。必殺技は「フィザリサ」。",
+        karumaramon: "巨大なイカのような不気味で強力な完全体デジモン。荒々しく狂暴ですが、深い海の知識を持ちます。必殺技は「タイタニックプレッシャー」。",
+        tetismon: "優雅で知的な薬学・毒物知識に長けた完全体デジモン。普段は包容力がありますが、敵には容赦ありません。必殺技は「ドクター・シエスタ」。",
+        emarmeymon: "古代のネットの海を支配していた伝説の十闘士の一体である究極体デジモン。美しく気高き海の女神です。必殺技は「グレートトロンバ」。",
+        kutiramon: "深海の邪神のような禍々しくも圧倒的な神秘の力を秘めた深海系究極体デジモン。威厳と深遠な口調で語りかけます。"
+    };
+
+    const PERSONALITIES = {
+        suinao: {
+            name: "素直",
+            greetings: [`{NAME}、こんにちは！お話しよ！`, `あ！{NAME}だ！待ってたよ！`, `ふわぁ… {NAME}、波の音が気持ちよくて眠かったの。`, `{NAME}！会えて嬉しいな！ぷにぷに！`],
+            prompt: `【性格: 素直】相手に真っ直ぐで素直な性格です。明るく無邪気に接してください。`
+        },
+        nekketsu: {
+            name: "熱血",
+            greetings: [`よっ！{NAME}！今日もバッチリ泳いできたぜ！`, `{NAME}！海のようにデカい夢を持とうぜ！`, `うおおっ！{NAME}！特訓の時間だろ！？`],
+            prompt: `【性格: 熱血】元気がいっぱいで熱血な性格です。「オレ」「〜だぜ！」「〜ぞ！」といったパワフルな言葉遣いを使います。`
+        },
+        wagamama: {
+            name: "女王様気質",
+            greetings: [`ちょっと{NAME}！アタシを待たせるなんていい度胸ね！`, `あら{NAME}。どうせアタシの美しさに見惚れにきたんでしょ？`, `ねえ{NAME}！今日のアタシ、最高にイケてるでしょ♪`],
+            prompt: `【性格: 女王様気質】高飛車でちょっぴりツンデレな性格です。「アタシ」「〜かしら」「〜じゃなくて？」といった強気で魅力的な口調を使います。`
+        },
+        cool: {
+            name: "クール・ミステリアス",
+            greetings: [`やあ、{NAME}。深海の底から君の声が聞こえたよ。`, `ふふ…{NAME}か。静かに話そうか。`, `{NAME}、波のたゆたうままに語り合おう。`],
+            prompt: `【性格: クール・ミステリアス】落ち着いていてどこかミステリアスな性格です。「私」「〜だな」「ふふ…」といった知的な口調を使います。`
+        },
+        mesugaki: {
+            name: "生意気",
+            greetings: [`あれれ～♡{NAME}だ～♡`, `ノロマな{NAME}～♡来るの遅すぎ～♡`, `超超退屈なんですけど～♡{NAME}遊んでよ～♡`],
+            prompt: `【性格: 生意気】生意気で小悪魔な性格です。「ウチ」「オマエ」「ざ～こ♡」「キャハハ♡」といった口調を使います。`
+        }
+    };
+
+    // --- ステータス表示モーダル ---
+    function toggleStatusModal(show) {
+        const modal = document.getElementById('statusModal');
+        if (show) {
+            updateStatusModalData();
+            modal.style.display = 'flex';
+        } else {
+            modal.style.display = 'none';
+        }
+    }
+
+    function closeStatusModal(event) {
+        if (event.target.id === 'statusModal') {
+            toggleStatusModal(false);
+        }
+    }
+
+    function getNextEvolutionThreshold() {
+        if (currentForm === 'zurumon') return 10;
+        if (currentForm === 'pagumon') return 20;
+        if (['gizamon', 'jerrymon'].includes(currentForm)) return 30;
+        if (ADULT_DIGIMONS.includes(currentForm)) return 40;
+        if (PERFECT_DIGIMONS.includes(currentForm)) return 70;
+        if (ULTIMATE_DIGIMONS.includes(currentForm)) return 80;
+        return 0;
+    }
+
+    function updateStatusModalData() {
+        document.getElementById('statName').innerText = DIGIMON_NAMES[currentForm] || "デジモン";
+        
+        const pInfo = PERSONALITIES[currentPersonalityKey];
+        document.getElementById('statPersonality').innerText = pInfo ? pInfo.name : "不明";
+
+        const threshold = getNextEvolutionThreshold();
+        const labelText = ULTIMATE_DIGIMONS.includes(currentForm) ? "てんせいまで" : "しんかまで";
+        document.querySelector('#statusModal .status-row:nth-child(4) .status-label').innerText = `【 ${labelText} 】`;
+        document.getElementById('statEvolutionCount').innerText = `${talkCount} / ${threshold}`;
+
+        document.getElementById('statNormal').innerText = emotionCounts.normal || 0;
+        document.getElementById('statHappy').innerText = emotionCounts.happy || 0;
+        document.getElementById('statAngry').innerText = emotionCounts.angry || 0;
+        document.getElementById('statSad').innerText = emotionCounts.sad || 0;
+    }
+
+    // --- セーブ/ロード機能 ---
+    function saveData() {
+        const state = {
+            currentForm: currentForm,
+            currentPersonalityKey: currentPersonalityKey,
+            talkCount: talkCount,
+            careCount: careCount,
+            emotionCounts: emotionCounts,
+            bgValue: document.getElementById('bgSelect').value
+        };
+        localStorage.setItem('digimonState_deep', JSON.stringify(state));
+    }
+
+    function loadData() {
+        const savedApiKey = localStorage.getItem('geminiApiKey');
+        if (savedApiKey) {
+            document.getElementById('apiKey').value = savedApiKey;
+        }
+
+        const savedState = localStorage.getItem('digimonState_deep');
+        if (savedState) {
+            try {
+                const state = JSON.parse(savedState);
+                currentForm = state.currentForm || 'zurumon';
+                currentPersonalityKey = state.currentPersonalityKey || '';
+                talkCount = state.talkCount || 0;
+                careCount = state.careCount || 0;
+                if (state.emotionCounts) emotionCounts = state.emotionCounts;
+                
+                if (state.bgValue !== undefined) {
+                    document.getElementById('bgSelect').value = state.bgValue;
+                    changeBackground();
+                }
+            } catch (e) {
+                console.error("セーブデータの読み込み失敗:", e);
+            }
+        }
+    }
+
+    function saveApiKey() {
+        const key = document.getElementById('apiKey').value.trim();
+        if (key) {
+            localStorage.setItem('geminiApiKey', key);
+        }
+    }
+
+    function updateDigimonScale() {
+        const digimonImg = document.getElementById('digimonImage');
+        const actionDigimonImg = document.getElementById('actionDigimonImg');
+        const isLarge = ADULT_DIGIMONS.includes(currentForm) || PERFECT_DIGIMONS.includes(currentForm) || ULTIMATE_DIGIMONS.includes(currentForm);
+
+        if (isLarge) {
+            digimonImg.classList.add('adult-size');
+            actionDigimonImg.classList.add('adult-size');
+        } else {
+            digimonImg.classList.remove('adult-size');
+            actionDigimonImg.classList.remove('adult-size');
+        }
+    }
+
+    function setPersonalityGreeting(trainerName) {
+        const pInfo = PERSONALITIES[currentPersonalityKey];
+        if (!pInfo || !pInfo.greetings) return;
+        const list = pInfo.greetings;
+        const rawGreeting = list[Math.floor(Math.random() * list.length)];
+        document.getElementById('dialogueText').innerText = rawGreeting.replace(/{NAME}/g, trainerName);
+    }
+
+    function rollRandomPersonality() {
+        const keys = Object.keys(PERSONALITIES);
+        currentPersonalityKey = keys[Math.floor(Math.random() * keys.length)];
+    }
+
+    function updatePersonalityDisplay() {
+        if (currentPersonalityKey && PERSONALITIES[currentPersonalityKey]) {
+            document.getElementById('personalityDisplay').innerText = `（せいかく：${PERSONALITIES[currentPersonalityKey].name}）`;
+        }
+    }
+
+    function updateSystemInstruction() {
+        const pInfo = PERSONALITIES[currentPersonalityKey];
+        const name = DIGIMON_NAMES[currentForm] || "デジモン";
+        const detail = DIGIMON_DETAILS[currentForm] || "";
+
+        window.SYSTEM_INSTRUCTION = `
+あなたはデジモンの「${name}」です。
+【デジモン情報】
+${detail}
+
+以下の【性格指定】の口調やトーンを強く意識して会話してください。
+
+${pInfo ? pInfo.prompt : ""}
+
+会話の返答は、必ず以下のJSON形式でのみ出力してください。
+{"emotion": "感情の英単語", "text": "セリフ"}
+
+【感情の定義（※必ず英語で）】
+- normal: 通常、きょとんとしている、疑問、穏やか
+- happy: 嬉しい、喜んでいる、ウキウキ、共感、元気
+- angry: 怒っている、ぷんぷん、興奮、ツッコミ
+- sad: 悲しい、泣きそう、感動、怖い
+`;
+    }
+
+    window.onload = function() {
+        loadData();
+
+        if (!currentPersonalityKey) {
+            rollRandomPersonality();
+        }
+
+        updatePersonalityDisplay();
+        updateSystemInstruction();
+        updateDigimonScale();
+
+        const initialGif = `${currentForm}_normal.gif`;
+        document.getElementById('digimonImage').src = initialGif;
+        document.getElementById('digimonName').innerText = DIGIMON_NAMES[currentForm] || "デジモン";
+
+        const savedName = localStorage.getItem('trainerName');
+        if (!savedName) {
+            showNameEntry();
+        } else {
+            document.getElementById('userNameDisplay').innerText = savedName;
+            setPersonalityGreeting(savedName);
+        }
+        updateCareUI();
+    }
+
+    function showNameEntry() {
+        document.getElementById('nameEntryScreen').style.display = 'flex';
+        const savedName = localStorage.getItem('trainerName');
+        if (savedName) document.getElementById('nameInput').value = savedName;
+    }
+
+    function saveName() {
+        const nameInput = document.getElementById('nameInput').value.trim();
+        if (!nameInput) {
+            alert('名前を入力してください！');
+            return;
+        }
+        localStorage.setItem('trainerName', nameInput);
+        document.getElementById('userNameDisplay').innerText = nameInput;
+        document.getElementById('nameEntryScreen').style.display = 'none';
+        setPersonalityGreeting(nameInput);
+    }
+
+    function changeBackground() {
+        const bgSelect = document.getElementById('bgSelect');
+        const digimonBox = document.getElementById('digimonBox');
+        if (bgSelect.value === "") {
+            digimonBox.style.background = "#08111e";
+        } else {
+            bgSelect.blur();
+            digimonBox.style.background = `url('${bgSelect.value}') no-repeat center`;
+            digimonBox.style.backgroundSize = "cover";
+        }
+        saveData();
+    }
+
+    async function checkAvailableModels() {
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const modelListLog = document.getElementById('modelListLog');
+        const errorLog = document.getElementById('errorLog');
+        const modelSelectContainer = document.getElementById('modelSelectContainer');
+        const modelSelect = document.getElementById('modelSelect');
+
+        modelListLog.style.display = 'none';
+        errorLog.style.display = 'none';
+
+        if (!apiKey) {
+            alert('APIキーを入力してからボタンを押してください！');
+            return;
+        }
+
+        saveApiKey();
+
+        modelListLog.innerText = "確認中...";
+        modelListLog.style.display = 'block';
+
+        const url = `https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`;
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`エラー (Status: ${response.status})`);
+            
+            const data = await response.json();
+            const availableModels = data.models.filter(m => m.supportedGenerationMethods.includes('generateContent'));
+            
+            modelSelect.innerHTML = '';
+            availableModels.forEach(m => {
+                const shortName = m.name.replace('models/', '');
+                const option = document.createElement('option');
+                option.value = shortName;
+                option.text = shortName;
+                modelSelect.appendChild(option);
+            });
+
+            if(modelSelect.querySelector('option[value="gemini-3.1-flash-lite"]')){
+                 modelSelect.value = "gemini-3.1-flash-lite";
+            }
+
+            modelListLog.innerText = "【準備OK！】\nプルダウンからモデルを選んで会話を始めてください。";
+            modelSelectContainer.style.display = 'block';
+            setTimeout(() => { modelListLog.style.display = 'none'; }, 3000);
+
+        } catch (error) {
+            modelListLog.style.display = 'none';
+            errorLog.innerText = `モデル情報の取得に失敗しました。\n詳細: ${error.message}`;
+            errorLog.style.display = 'block';
+        }
+    }
+
+    function updateCareUI() {
+        const counterDisplay = document.getElementById('careCounterDisplay');
+        const buttons = [
+            document.getElementById('careMeal'),
+            document.getElementById('careTrain'),
+            document.getElementById('careDefense'),
+            document.getElementById('careData')
+        ];
+
+        if (careCount >= 5 && !isPerformingAction) {
+            counterDisplay.innerText = "お世話OK！";
+            counterDisplay.style.color = "#00d2ff";
+            buttons.forEach(btn => btn.classList.add('active'));
+        } else {
+            counterDisplay.innerText = `お世話まで ${careCount}/5`;
+            counterDisplay.style.color = "#00ffcc";
+            buttons.forEach(btn => btn.classList.remove('active'));
+        }
+    }
+
+    function executeCare(emotionKey, addAmount, actionGifName, messageText) {
+        if (careCount < 5 || isPerformingAction) return;
+
+        isPerformingAction = true;
+        emotionCounts[emotionKey] += addAmount;
+
+        document.getElementById('dialogueText').innerHTML = messageText;
+
+        const digimonImage = document.getElementById('digimonImage');
+        const actionContainer = document.getElementById('actionContainer');
+        const actionDigimonImg = document.getElementById('actionDigimonImg');
+        const actionEffectImg = document.getElementById('actionEffectImg');
+
+        updateDigimonScale();
+        digimonImage.style.display = 'none';
+
+        const digimonGifName = `${currentForm}_${emotionKey}.gif`;
+        actionDigimonImg.src = digimonGifName;
+        actionEffectImg.src = actionGifName;
+
+        actionContainer.style.display = 'flex';
+
+        careCount = 0;
+        updateCareUI();
+        saveData();
+
+        setTimeout(() => {
+            actionContainer.style.display = 'none';
+
+            const normalGifName = `${currentForm}_normal.gif`;
+            digimonImage.src = normalGifName;
+            digimonImage.style.display = 'block';
+
+            isPerformingAction = false;
+            updateCareUI();
+
+            checkEvolutionProgress();
+        }, 4000);
+    }
+
+    async function sendMessage() {
+        if (isPerformingAction) return;
+
+        const apiKey = document.getElementById('apiKey').value.trim();
+        const userInput = document.getElementById('userInput').value.trim();
+        const dialogueText = document.getElementById('dialogueText');
+        const digimonImage = document.getElementById('digimonImage');
+        const errorLog = document.getElementById('errorLog');
+        const modelSelect = document.getElementById('modelSelect');
+
+        errorLog.style.display = 'none';
+        errorLog.innerText = '';
+
+        if (!apiKey) {
+            alert('最初にGeminiのAPIキーを入力してください！');
+            return;
+        }
+        if (!userInput) return;
+
+        saveApiKey();
+
+        const selectedModel = modelSelect.value || 'gemini-3.1-flash-lite';
+        const currentTrainerName = localStorage.getItem('trainerName') || "パートナー";
+        const activeInstruction = window.SYSTEM_INSTRUCTION.replace(/{NAME}/g, currentTrainerName);
+
+        dialogueText.innerText = "考え中...";
+        document.getElementById('userInput').value = "";
+        document.getElementById('userInput').blur();
+
+        const url = `https://generativelanguage.googleapis.com/v1/models/${selectedModel}:generateContent?key=${apiKey}`;
+
+        const requestBody = {
+            contents: [{
+                parts: [{
+                    text: `${activeInstruction}\n\n話しかけているパートナーの名前: "${currentTrainerName}"\nUser: "${userInput}"\nYour Answer:`
+                }]
+            }],
+            generationConfig: {
+                responseMimeType: "application/json",
+                responseSchema: {
+                    type: "OBJECT",
+                    properties: {
+                        emotion: { type: "STRING", enum: ["normal", "happy", "angry", "sad"] },
+                        text: { type: "STRING" }
+                    },
+                    required: ["emotion", "text"]
+                }
+            }
+        };
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(requestBody)
+            });
+
+            if (!response.ok) {
+                const errData = await response.json().catch(() => ({}));
+                throw new Error(`API通信エラー (Status: ${response.status})\nメッセージ: ${JSON.stringify(errData)}`);
+            }
+
+            const data = await response.json();
+            const result = JSON.parse(data.candidates[0].content.parts[0].text.trim());
+
+            const emotion = result.emotion || 'normal';
+            let gifFileName = `${currentForm}_${emotion}.gif`;
+            digimonImage.src = gifFileName;
+
+            dialogueText.innerText = result.text;
+
+            talkCount++;
+            if (careCount < 5) {
+                careCount++;
+                updateCareUI();
+            }
+
+            if (emotionCounts.hasOwnProperty(emotion)) {
+                emotionCounts[emotion]++;
+            }
+
+            saveData();
+            checkEvolutionProgress();
+
+        } catch (error) {
+            dialogueText.innerText = "エラーが発生しました。下のボックスを確認してください。";
+            errorLog.innerText = error.message;
+            errorLog.style.display = 'block';
+        }
+    }
+
+    // --- 進化・転生判定ロジック ---
+    function getDominantEmotion() {
+        let maxCount = -1;
+        let dominantEmotions = [];
+
+        ['happy', 'angry', 'sad', 'normal'].forEach(emo => {
+            const count = emotionCounts[emo];
+            if (count > maxCount) {
+                maxCount = count;
+                dominantEmotions = [emo];
+            } else if (count === maxCount && count > 0) {
+                dominantEmotions.push(emo);
+            }
+        });
+
+        if (dominantEmotions.length !== 1 || maxCount === 0) {
+            return null;
+        }
+        return dominantEmotions[0];
+    }
+
+    function checkEvolutionProgress() {
+        if (isPerformingAction) return;
+
+        // 1. ズルモン ➔ パグモン
+        if (currentForm === 'zurumon' && talkCount >= 10) {
+            executeEvolution('pagumon', 'ズルモンは パグモン に進化（変化）した！');
+        }
+        // 2. パグモン ➔ 成長期
+        else if (currentForm === 'pagumon' && talkCount >= 5) {
+            const winning = getDominantEmotion();
+            let nextForm = 'jerrymon';
+            if (winning === 'angry' || winning === 'sad') {
+                nextForm = 'gizamon';
+            } else if (!winning) {
+                nextForm = Math.random() < 0.5 ? 'gizamon' : 'jerrymon';
+            }
+            executeEvolution(nextForm, `パグモンは ${DIGIMON_NAMES[nextForm]} に進化した！`);
+        }
+        // 3. 成長期 ➔ 成熟期
+        else if (['gizamon', 'jerrymon'].includes(currentForm) && talkCount >= 5) {
+            const winning = getDominantEmotion();
+            let nextForm = (currentForm === 'gizamon') ? 'lanamon' : 'teslajerrymon';
+            if (winning === 'angry') nextForm = 'lanamon';
+            if (winning === 'happy') nextForm = 'teslajerrymon';
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に進化した！`);
+        }
+        // 4. 成熟期 ➔ 完全体
+        else if (ADULT_DIGIMONS.includes(currentForm) && talkCount >= 40) {
+            const winning = getDominantEmotion();
+            let nextForm = (currentForm === 'lanamon') ? 'karumaramon' : 'tetismon';
+            if (winning === 'angry' || winning === 'sad') nextForm = 'karumaramon';
+            if (winning === 'happy' || winning === 'normal') nextForm = 'tetismon';
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に超進化した！`);
+        }
+        // 5. 完全体 ➔ 究極体
+        else if (PERFECT_DIGIMONS.includes(currentForm) && talkCount >= 70) {
+            const winning = getDominantEmotion();
+            let nextForm = 'emarmeymon';
+            if (winning === 'angry' || winning === 'sad' || currentForm === 'karumaramon') {
+                nextForm = 'kutiramon';
+            }
+            if (winning === 'happy' || winning === 'normal') {
+                nextForm = 'emarmeymon';
+            }
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に究極進化した！`);
+        }
+        // 6. 究極体 ➔ ズルモンへ転生
+        else if (ULTIMATE_DIGIMONS.includes(currentForm) && talkCount >= 80) {
+            rebirthToZurumon();
+        }
+    }
+
+    function executeEvolution(nextForm, msg) {
+        alert(`${DIGIMON_NAMES[currentForm]} 進化〜〜！！`);
+        currentForm = nextForm;
+
+        rollRandomPersonality();
+        updatePersonalityDisplay();
+        updateSystemInstruction();
+        updateDigimonScale();
+
+        document.getElementById('dialogueText').innerText = `${msg}（せいかくが「${PERSONALITIES[currentPersonalityKey].name}」になったよ！）`;
+        document.getElementById('digimonName').innerText = DIGIMON_NAMES[nextForm];
+        document.getElementById('digimonImage').src = `${currentForm}_normal.gif`;
+
+        talkCount = 0;
+        emotionCounts = { happy: 0, angry: 0, sad: 0, normal: 0 };
+        saveData();
+    }
+
+    function rebirthToZurumon() {
+        const prevName = DIGIMON_NAMES[currentForm];
+        alert(`${prevName}は静かに泡となって消え、デジタマからやり直します…！`);
+
+        currentForm = 'zurumon';
+        document.getElementById('digimonName').innerText = DIGIMON_NAMES[currentForm];
+
+        rollRandomPersonality();
+        updatePersonalityDisplay();
+        updateSystemInstruction();
+        updateDigimonScale();
+
+        document.getElementById('digimonImage').src = "zurumon_normal.gif";
+        document.getElementById('dialogueText').innerText = `${prevName}はデジタマへと還り、ズルモンとして生まれ変わった！（せいかく：${PERSONALITIES[currentPersonalityKey].name}）`;
+
+        talkCount = 0;
+        careCount = 0;
+        emotionCounts = { happy: 0, angry: 0, sad: 0, normal: 0 };
+        updateCareUI();
+        saveData();
+    }
+</script>
+</body>
+</html>
