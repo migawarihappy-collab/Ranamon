@@ -289,8 +289,12 @@
             transition: height 0.3s ease;
         }
 
+        /* アクション時の反転（右向き）処理追加 */
         .action-digimon-img {
-            transform: scaleX(1); /* 基本は左向き */
+            transform: scaleX(1); /* デフォルトは左向き */
+        }
+        .action-digimon-img.facing-right {
+            transform: scaleX(-1); /* 右向きに反転 */
         }
 
         .action-digimon-img.adult-size {
@@ -394,7 +398,7 @@
                 <span class="status-val" id="statPersonality" style="color: #00d2ff;">素直</span>
             </div>
             <div class="status-row">
-                <span class="status-label">【 へんかまで 】</span>
+                <span class="status-label">【 しんかまで 】</span>
                 <span class="status-val" id="statEvolutionCount" style="color: #00ffcc;">0 / 10</span>
             </div>
 
@@ -560,7 +564,7 @@
         cool: {
             name: "ミステリアス",
             greetings: [`やあ、{NAME}。深海の底から君の声が聞こえたよ。`, `ふふ…{NAME}か。静かに話そうか。`, `{NAME}、波のたゆたうままに語り合おう。`],
-            prompt: `【性格: クール・ミステリアス】落ち着いていてどこかミステリアスな性格です。「私」「〜だな」「ふふ…」といった知的な口調を使います。`
+            prompt: `【性格: クール・ミステリアス】落ち着いていてどこかミステリアスな性格です。「私」「〜よね」「ふふ…」といった知的な口調を使います。`
         },
         mesugaki: {
             name: "生意気",
@@ -864,6 +868,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         const digimonGifName = `${currentForm}_${emotionKey}.gif`;
         actionDigimonImg.src = digimonGifName;
+        actionDigimonImg.classList.add('facing-right'); // ★お世話アクション中は右向きにする★
         actionEffectImg.src = actionGifName;
 
         actionContainer.style.display = 'flex';
@@ -874,6 +879,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         setTimeout(() => {
             actionContainer.style.display = 'none';
+            actionDigimonImg.classList.remove('facing-right'); // ★アクション終了時に向きを解除★
 
             const normalGifName = `${currentForm}_normal.gif`;
             digimonImage.src = normalGifName;
@@ -1003,7 +1009,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         // 1. ズルモン ➔ パグモン
         if (currentForm === 'zurumon' && talkCount >= 10) {
-            executeEvolution('pagumon', 'ズルモンは パグモン に進化（変化）した！');
+            executeEvolution('pagumon', 'ズルモンは パグモン に進化した！');
         }
         // 2. パグモン ➔ 成長期
         else if (currentForm === 'pagumon' && talkCount >= 20) {
@@ -1030,7 +1036,7 @@ ${pInfo ? pInfo.prompt : ""}
             let nextForm = (currentForm === 'lanamon') ? 'karumaramon' : 'tetismon';
             if (winning === 'angry' || winning === 'sad') nextForm = 'karumaramon';
             if (winning === 'happy' || winning === 'normal') nextForm = 'tetismon';
-            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に超進化した！`);
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に進化した！`);
         }
         // 5. 完全体 ➔ 究極体
         else if (PERFECT_DIGIMONS.includes(currentForm) && talkCount >= 70) {
@@ -1042,7 +1048,7 @@ ${pInfo ? pInfo.prompt : ""}
             if (winning === 'happy' || winning === 'normal') {
                 nextForm = 'emarmeymon';
             }
-            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に究極進化した！`);
+            executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に極進化した！`);
         }
         // 6. 究極体 ➔ ズルモンへ転生
         else if (ULTIMATE_DIGIMONS.includes(currentForm) && talkCount >= 80) {
