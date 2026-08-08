@@ -1006,7 +1006,7 @@ ${pInfo ? pInfo.prompt : ""}
             executeEvolution('pagumon', 'ズルモンは パグモン に進化（変化）した！');
         }
         // 2. パグモン ➔ 成長期
-        else if (currentForm === 'pagumon' && talkCount >= 5) {
+        else if (currentForm === 'pagumon' && talkCount >= 20) {
             const winning = getDominantEmotion();
             let nextForm = 'jerrymon';
             if (winning === 'angry' || winning === 'sad') {
@@ -1017,7 +1017,7 @@ ${pInfo ? pInfo.prompt : ""}
             executeEvolution(nextForm, `パグモンは ${DIGIMON_NAMES[nextForm]} に進化した！`);
         }
         // 3. 成長期 ➔ 成熟期
-        else if (['gizamon', 'jerrymon'].includes(currentForm) && talkCount >= 5) {
+        else if (['gizamon', 'jerrymon'].includes(currentForm) && talkCount >= 30) {
             const winning = getDominantEmotion();
             let nextForm = (currentForm === 'gizamon') ? 'lanamon' : 'teslajerrymon';
             if (winning === 'angry') nextForm = 'lanamon';
