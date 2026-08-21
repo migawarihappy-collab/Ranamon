@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="デジモントーク - 水のスピリットVer.">
 
-<link rel="apple-touch-icon" href="icon.png">
+    <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
 
     <title>デジモントーク - 水のスピリットVer.</title>
@@ -114,10 +114,10 @@
             font-size: 12px;
             color: #fff;
             display: flex;
-            gap: 6px;
+            gap: 4px;
             align-items: center;
         }
-        .rename-btn, .status-btn {
+        .rename-btn, .status-btn, .battle-btn {
             background: #1c3d5a;
             padding: 2px 6px;
             font-size: 10px;
@@ -132,8 +132,20 @@
             font-weight: bold;
             border-color: #80e5ff;
         }
+        .battle-btn {
+            background: #ff4444;
+            color: #fff;
+            font-weight: bold;
+            border-color: #ff8888;
+        }
+        .battle-btn:disabled {
+            background: #555;
+            border-color: #777;
+            color: #aaa;
+            cursor: not-allowed;
+        }
 
-        /* ステータスモーダル */
+        /* モーダル共通 */
         .modal-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -202,6 +214,119 @@
             margin-top: 10px;
         }
 
+        /* バトル難易度ボタン */
+        .diff-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #1c3d5a;
+            color: #fff;
+            border: 2px solid #00d2ff;
+            border-radius: 6px;
+            font-family: 'DotGothic16', sans-serif;
+            font-size: 14px;
+            cursor: pointer;
+            text-align: left;
+            transition: background 0.2s;
+        }
+        .diff-btn:hover {
+            background: #007acc;
+        }
+
+        /* バトル実行画面モーダル */
+        .battle-screen-box {
+            width: 95%;
+            height: 90%;
+            background: #08111e;
+            border: 4px double #ff4444;
+            border-radius: 8px;
+            padding: 10px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .battle-arena {
+            flex-grow: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #122b46;
+            border: 2px solid #3a6b8c;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        .fighter-box {
+            width: 45%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .fighter-img {
+            height: 64px;
+            image-rendering: pixelated;
+            transition: transform 0.2s;
+        }
+        .fighter-img.adult-size {
+            height: 90px;
+        }
+        /* バトルアニメーション用クラス */
+        .facing-right {
+            transform: scaleX(-1);
+        }
+        .shake-horizontal {
+            animation: shakeHoriz 0.4s ease-in-out;
+        }
+        .bounce-vertical {
+            animation: bounceVert 0.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes shakeHoriz {
+            0% { transform: translateX(0); }
+            20% { transform: translateX(-12px); }
+            40% { transform: translateX(12px); }
+            60% { transform: translateX(-8px); }
+            80% { transform: translateX(8px); }
+            100% { transform: translateX(0); }
+        }
+
+        @keyframes bounceVert {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-15px); }
+        }
+
+        .hp-bar-bg {
+            width: 100%;
+            height: 10px;
+            background: #444;
+            border: 1px solid #fff;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .hp-bar-fill {
+            height: 100%;
+            background: #00ffcc;
+            width: 100%;
+            transition: width 0.3s ease;
+        }
+        .battle-log-box {
+            height: 120px;
+            background: #000;
+            border: 2px solid #00d2ff;
+            padding: 8px;
+            font-family: 'DotGothic16', sans-serif;
+            font-size: 12px;
+            color: #fff;
+            overflow-y: auto;
+            text-align: left;
+            white-space: pre-wrap;
+            line-height: 1.4;
+        }
+
         /* お世話コマンドエリア */
         .care-panel {
             display: flex;
@@ -252,18 +377,15 @@
             overflow: hidden;
         }
         
-        /* 16x16ドット絵用のくっきり表示・拡大設定 */
         .digimon-img {
-            height: 64px; /* 16px × 4倍サイズ */
+            height: 64px;
             width: auto;
             object-fit: contain;
             position: absolute;
             bottom: 15px;
             
-            /* ドット絵ぼやけ防止のための設定 */
             image-rendering: pixelated;
             image-rendering: crisp-edges;
-            image-rendering: -moz-crisp-edges;
 
             animation: walkPatternLeft 8s infinite ease-in-out;
             animation-delay: 0.1s;
@@ -271,7 +393,7 @@
         }
 
         .digimon-img.adult-size {
-            height: 96px; /* 16px × 6倍サイズ（完全体・究極体など大型用） */
+            height: 96px;
         }
 
         .action-container {
@@ -288,35 +410,25 @@
             height: 64px;
             object-fit: contain;
             image-rendering: pixelated;
-            image-rendering: crisp-edges;
             transition: height 0.3s ease;
-        }
-
-        /* アクション時の反転（右向き）処理追加 */
-        .action-digimon-img {
-            transform: scaleX(1); /* デフォルトは左向き */
-        }
-        .action-digimon-img.facing-right {
-            transform: scaleX(-1); /* 右向きに反転 */
         }
 
         .action-digimon-img.adult-size {
             height: 96px;
         }
 
-        /* ★左向き原点用の歩行アニメーション★ */
         @keyframes walkPatternLeft {
-            0% { transform: translateX(0) scaleX(1); }           /* 左向きのまま停止 */
-            12.5% { transform: translateX(-60px) scaleX(1); }     /* 左に歩く */
-            25% { transform: translateX(-60px) scaleX(1); }      /* 左で停止 */
-            25.01% { transform: translateX(-60px) scaleX(-1); }  /* 右に向き直る */
-            37.5% { transform: translateX(0) scaleX(-1); }        /* 右に歩いて中央へ */
-            50% { transform: translateX(0) scaleX(-1); }          /* 中央で右向き停止 */
-            62.5% { transform: translateX(60px) scaleX(-1); }     /* 右に歩く */
-            75% { transform: translateX(60px) scaleX(-1); }      /* 右で停止 */
-            75.01% { transform: translateX(60px) scaleX(1); }    /* 左に向き直る */
-            87.5% { transform: translateX(0) scaleX(1); }         /* 左に歩いて中央へ */
-            100% { transform: translateX(0) scaleX(1); }        /* 中央で停止 */
+            0% { transform: translateX(0) scaleX(1); }
+            12.5% { transform: translateX(-60px) scaleX(1); }
+            25% { transform: translateX(-60px) scaleX(1); }
+            25.01% { transform: translateX(-60px) scaleX(-1); }
+            37.5% { transform: translateX(0) scaleX(-1); }
+            50% { transform: translateX(0) scaleX(-1); }
+            62.5% { transform: translateX(60px) scaleX(-1); }
+            75% { transform: translateX(60px) scaleX(-1); }
+            75.01% { transform: translateX(60px) scaleX(1); }
+            87.5% { transform: translateX(0) scaleX(1); }
+            100% { transform: translateX(0) scaleX(1); }
         }
 
         .dialogue-box {
@@ -397,6 +509,10 @@
                 <span class="status-val" id="statName">ズルモン</span>
             </div>
             <div class="status-row">
+                <span class="status-label">【 しゅぞく 】</span>
+                <span class="status-val" id="statType" style="color: #ffcc00;">フリー</span>
+            </div>
+            <div class="status-row">
                 <span class="status-label">【 せいかく 】</span>
                 <span class="status-val" id="statPersonality" style="color: #00d2ff;">素直</span>
             </div>
@@ -405,27 +521,70 @@
                 <span class="status-val" id="statEvolutionCount" style="color: #00ffcc;">0 / 10</span>
             </div>
 
-            <div style="font-size: 11px; color: #88c0d0; margin-top: 10px; margin-bottom: 4px;">【 かんじょうち 】</div>
+            <div style="font-size: 11px; color: #88c0d0; margin-top: 10px; margin-bottom: 4px;">【 かんじょうち（努力値） 】</div>
             <div class="emotion-grid">
                 <div class="emotion-item">
-                    <span style="color: #aaa;">信頼:</span>
+                    <span style="color: #aaa;">信頼(HP):</span>
                     <span id="statNormal" style="color: #fff;">0</span>
                 </div>
                 <div class="emotion-item">
-                    <span style="color: #ff66aa;">歓喜:</span>
+                    <span style="color: #ff66aa;">歓喜(特攻):</span>
                     <span id="statHappy" style="color: #ff66aa;">0</span>
                 </div>
                 <div class="emotion-item">
-                    <span style="color: #ff4444;">激情:</span>
+                    <span style="color: #ff4444;">激情(攻撃):</span>
                     <span id="statAngry" style="color: #ff4444;">0</span>
                 </div>
                 <div class="emotion-item">
-                    <span style="color: #aa66ff;">感受:</span>
+                    <span style="color: #aa66ff;">感受(防御):</span>
                     <span id="statSad" style="color: #aa66ff;">0</span>
                 </div>
             </div>
 
             <button class="modal-close-btn" onclick="toggleStatusModal(false)">とじる</button>
+        </div>
+    </div>
+
+    <!-- バトル難易度選択モーダル -->
+    <div id="battleSelectModal" class="modal-overlay" style="display: none;" onclick="toggleBattleSelectModal(false)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-title">⚔️ バトル難易度選択</div>
+            <button class="diff-btn" onclick="startBattle(1)">★☆☆☆ (成長期級)<br><small style="color:#aaa;">勝利報酬: 全感情値 +2</small></button>
+            <button class="diff-btn" onclick="startBattle(2)">★★☆☆ (成熟期級)<br><small style="color:#aaa;">勝利報酬: 全感情値 +4</small></button>
+            <button class="diff-btn" onclick="startBattle(3)">★★★☆ (完全体級)<br><small style="color:#aaa;">勝利報酬: 全感情値 +6</small></button>
+            <button class="diff-btn" onclick="startBattle(4)">★★★★ (究極体級)<br><small style="color:#aaa;">勝利報酬: 全感情値 +8</small></button>
+            <button class="modal-close-btn" onclick="toggleBattleSelectModal(false)">やめる</button>
+        </div>
+    </div>
+
+    <!-- バトル対戦画面モーダル -->
+    <div id="battleScreenModal" class="modal-overlay" style="display: none;">
+        <div class="battle-screen-box">
+            <div style="font-size: 14px; color: #ff4444; font-weight: bold; text-align: center; font-family: 'DotGothic16', sans-serif;">⚔️ ネットバトル ⚔️</div>
+            
+            <div class="battle-arena">
+                <!-- プレイヤー側 (右向き＝scaleX(-1)で敵を向く) -->
+                <div class="fighter-box">
+                    <div id="bPlayerName" style="font-size: 11px; font-family: 'DotGothic16', sans-serif;">---</div>
+                    <img id="bPlayerImg" class="fighter-img facing-right" src="" alt="player">
+                    <div class="hp-bar-bg"><div id="bPlayerHpBar" class="hp-bar-fill"></div></div>
+                    <div id="bPlayerHpText" style="font-size: 10px; margin-top:2px;">HP: 0/0</div>
+                </div>
+
+                <div style="font-size: 18px; font-weight: bold; color: #ff4444;">VS</div>
+
+                <!-- 敵側 (左向き＝通常) -->
+                <div class="fighter-box">
+                    <div id="bEnemyName" style="font-size: 11px; font-family: 'DotGothic16', sans-serif;">---</div>
+                    <img id="bEnemyImg" class="fighter-img" src="" alt="enemy">
+                    <div class="hp-bar-bg"><div id="bEnemyHpBar" class="hp-bar-fill"></div></div>
+                    <div id="bEnemyHpText" style="font-size: 10px; margin-top:2px;">HP: 0/0</div>
+                </div>
+            </div>
+
+            <div id="battleLog" class="battle-log-box"></div>
+
+            <button id="battleCloseBtn" class="modal-close-btn" style="display:none;" onclick="closeBattleScreen()">閉じる</button>
         </div>
     </div>
 
@@ -454,15 +613,16 @@
                 <option value="umi.jpg">ネットの海</option>
                 <option value="shinkai.jpg">深海エリア</option>
                 <option value="den.jpg">サイバー空間</option>
-               <option value="den2.jpg">サイバー空間2</option>
-              <option value="frontia.jpg">フロンティア</option>
-              <option value="hero.jpg">十闘士</option>
+                <option value="den2.jpg">サイバー空間2</option>
+                <option value="frontia.jpg">フロンティア</option>
+                <option value="hero.jpg">十闘士</option>
             </select>
         </div>
         <div class="user-info-container">
             <span>👤:<span id="userNameDisplay">---</span></span>
             <button class="rename-btn" onclick="showNameEntry()">かえる</button>
             <button class="status-btn" onclick="toggleStatusModal(true)">📊 ステータス</button>
+            <button id="battleOpenBtn" class="battle-btn" onclick="toggleBattleSelectModal(true)">⚔️ バトル (<span id="battleTicketDisplay">0</span>)</button>
         </div>
     </div>
 
@@ -508,15 +668,12 @@
     // --- 状態変数 ---
     let talkCount = 0;          
     let careCount = 0;          
+    let talkForBattleCount = 0; // 会話カウント（3回でバトル解放用）
+    let battleTickets = 0;       // バトル可能回数
     let isPerformingAction = false; 
     let currentForm = 'zurumon'; 
     let currentPersonalityKey = '';
-    let emotionCounts = {
-        happy: 0,
-        angry: 0,
-        sad: 0,
-        normal: 0
-    };
+    let emotionCounts = { happy: 0, angry: 0, sad: 0, normal: 0 };
 
     // 世代ごとのリスト定義
     const CHILD_DIGIMONS = ['kaimon', 'jerrymon', 'ganimon', 'gizamon'];
@@ -524,99 +681,70 @@
     const PERFECT_DIGIMONS = ['hmon', 'tetismon', 'mdmon', 'karumaramon'];
     const ULTIMATE_DIGIMONS = ['marine', 'afmon', 'kutiramon', 'emarmeymon'];
 
-    // 表示名のマップ
+    // 表示名マップ
     const DIGIMON_NAMES = {
-        zurumon: "ズルモン",
-        pagumon: "パグモン",
-        // 成長期
-        kaimon: "シャコモン",
-        jerrymon: "ジェリーモン",
-        ganimon: "ガニモン",
-        gizamon: "ギザモン",
-        // 成熟期
-        gesomon: "ゲソモン",
-        teslajerrymon: "テスラジェリーモン",
-        ebidramon: "エビドラモン",
-        lanamon: "ラーナモン",
-        // 完全体
-        hmon: "ハンギョモン",
-        tetismon: "テティスモン",
-        mdmon: "マリンデビモン",
-        karumaramon: "カルマーラモン",
-        // 究極体
-        marine: "マリンエンジェモン",
-        afmon: "アンフィモン",
-        kutiramon: "クティーラモン",
-        emarmeymon: "エンシェントマーメイモン"
+        zurumon: "ズルモン", pagumon: "パグモン",
+        kaimon: "シャコモン", jerrymon: "ジェリーモン", ganimon: "ガニモン", gizamon: "ギザモン",
+        gesomon: "ゲソモン", teslajerrymon: "テスラジェリーモン", ebidramon: "エビドラモン", lanamon: "ラーナモン",
+        hmon: "ハンギョモン", tetismon: "テティスモン", mdmon: "マリンデビモン", karumaramon: "カルマーラモン",
+        marine: "マリンエンジェモン", afmon: "アンフィモン", kutiramon: "クティーラモン", emarmeymon: "エンシェントマーメイモン"
     };
 
-    // AI用の設定テキスト（性格・キャラクター性）
+    // ステータス定義
+    const DIGIMON_DATA = {
+        zurumon:     { type: "フリー", baseHp: 30, baseAtk: 5, baseSpAtk: 5, baseDef: 5, baseSpd: 5 },
+        pagumon:     { type: "フリー", baseHp: 50, baseAtk: 10, baseSpAtk: 10, baseDef: 8, baseSpd: 8 },
+        kaimon:      { type: "ウイルス", baseHp: 90, baseAtk: 25, baseSpAtk: 20, baseDef: 30, baseSpd: 15 },
+        jerrymon:    { type: "データ",   baseHp: 80, baseAtk: 20, baseSpAtk: 30, baseDef: 18, baseSpd: 28 },
+        ganimon:     { type: "データ",   baseHp: 95, baseAtk: 28, baseSpAtk: 15, baseDef: 32, baseSpd: 12 },
+        gizamon:     { type: "ウイルス", baseHp: 85, baseAtk: 24, baseSpAtk: 22, baseDef: 20, baseSpd: 22 },
+        gesomon:     { type: "ウイルス", baseHp: 130, baseAtk: 45, baseSpAtk: 40, baseDef: 35, baseSpd: 35 },
+        teslajerrymon:{ type: "データ",   baseHp: 120, baseAtk: 40, baseSpAtk: 55, baseDef: 30, baseSpd: 50 },
+        ebidramon:   { type: "ワクチン", baseHp: 145, baseAtk: 58, baseSpAtk: 25, baseDef: 50, baseSpd: 28 },
+        lanamon:     { type: "バリアブル", baseHp: 125, baseAtk: 38, baseSpAtk: 52, baseDef: 38, baseSpd: 42 },
+        hmon:        { type: "ワクチン", baseHp: 180, baseAtk: 70, baseSpAtk: 65, baseDef: 60, baseSpd: 55 },
+        tetismon:    { type: "データ",   baseHp: 170, baseAtk: 60, baseSpAtk: 90, baseDef: 55, baseSpd: 80 },
+        mdmon:       { type: "ウイルス", baseHp: 190, baseAtk: 85, baseSpAtk: 75, baseDef: 65, baseSpd: 50 },
+        karumaramon: { type: "バリアブル", baseHp: 185, baseAtk: 80, baseSpAtk: 80, baseDef: 70, baseSpd: 60 },
+        marine:      { type: "ワクチン", baseHp: 220, baseAtk: 60, baseSpAtk: 120, baseDef: 85, baseSpd: 110 },
+        afmon:       { type: "データ",   baseHp: 240, baseAtk: 110, baseSpAtk: 105, baseDef: 90, baseSpd: 100 },
+        kutiramon:   { type: "アンノウン", baseHp: 230, baseAtk: 100, baseSpAtk: 115, baseDef: 95, baseSpd: 90 },
+        emarmeymon:  { type: "ワクチン", baseHp: 250, baseAtk: 115, baseSpAtk: 110, baseDef: 100, baseSpd: 95 }
+    };
+
     const DIGIMON_DETAILS = {
-        zurumon: "超悪質のコンピュータウイルスとコンピューターを悪用する人間の負の念が融合して生まれたスライムのような粘液状のボディを持つ幼年期Ⅰデジモン。体をうねうね動かしながら意思表示をします。体を構成する物質は毒性が強く、口からは強烈な毒を帯びた泡を吐き出す。",
-        pagumon: "ズルモンの進化系、幼年期Ⅱの小型デジモン。頭の耳のような部分を器用に動かし羽ばたかせて少しだけ浮けるという特技があります。",
-        gizamon: "カエルのような体型に背中に4枚の刃の背鰭と手足に水を掻くための鰭がついた水棲哺乳類型デジモンの成長期。地上での生活よりも水中での生活に適しており、鰭と強靭な後ろ足で水中をすばやく泳ぎまわれるが、地上での移動はカエルのように飛び跳ねながら動き回る事しかできず、さらに地上では非常に臆病だが水中では本来の獰猛さを発揮する。必殺技は鋭利な刃物のような背鰭で相手に襲い掛かる「スパイラルエッジ」。",
-        kaimon: "硬い貝殻に覆われた水棲型デジモン。普段は貝殻の中に身を隠しているが、内面は好奇心旺盛で人懐っこい性格。必殺技は水圧で貝殻を打ち出す『ブラックパール』。",
-        ganimon: "甲殻類特有の硬い外骨格と強いハサミを持つ甲殻類型デジモン。性格は気短で怒りっぽいが、仲間想いな一面もある。必殺技はハサミで切断する『シザーズエクスキューション』。",
-        jerrymon: "クラゲのようなプニプニとした頭を持つ軟体型デジモン。全身が柔軟で体を頭の中に収納することもでき、通常は頭だけの状態で生活している。頭だけの時は風に吹かれただけでも飛ぶほどの軽さ。キレイな環境や行為を好み、汚れた行いを見ると怒りで体を出して戦闘モードになる。光線銃に変形させた触手の先から静電気砲を飛ばす麻痺攻撃の『ビビサンダー』、拳に電撃をまとうパンチ技『ボルトナックル』、宙返りしながら敵を蹴り上げる『スパイラルキック』が得意技だ。",
-        lanamon: "伝説の十闘士の一人が残した水のヒューマンスピリットで進化したハイブリッド体。半漁人の女子のような姿をしてる。気象予報システム内の海洋部分をデータに取り込んだ為か喜怒哀楽が激しい。必殺技は豪雨を一点に収束させ放つ『レインストリーム』と酸性雨で相手を溶かす『ジェラシーレイン』",
-        ebidramon: "エビのような姿をした巨大な水棲竜型デジモン。気性が荒く獰猛で、巨大な2本のハサミと強靭な尾で襲いかかる。必殺技は２本のはさみで襲いかかる『ツインネプチューン』。",
-        gesomon: "白いイカのような姿をした水棲軟体型デジモン。知能が高く手足の触手を器用に扱う。必殺技は口から毒墨を吐き出す『デッドリーシェード』。",
-        teslajerrymon: "刺激と快感を求めて、金網デスマッチなどの格闘技のデータを吸収して成長した成熟期のデジモン。電撃技がさらに強化され、繰り出す格闘には空手やプロレスなどから応用した技がさらに多くなった。体の柔らかさを活かして敵の攻撃も軽々といなす。必殺技は、手のひらに溜めた電撃『フィサリスト』を急所に打ち込む。さらに、身体から伸ばした高電圧の帯で敵をビリビリ刺激的にお仕置きする『パニッシューネ』、電撃を体に纏い回転しながら体当たりする『ボルスプライト』がある。",
-        karumaramon: "伝説の十闘士の一人が残した水のビーストスピリットで進化したハイブリッド体。半人半獣の姿をしており魔女のような上半身に巨大なイカの触手のような下半身をしており不気味で強力な水棲型デジモン。必殺技は胴部を硬化させドリルのように回転させて敵にぶつける「タイタニックチャージ」と口から溶解性の墨を吹く『ネーロコルソ』。",
-        hmon: "人間のような手足を持つ水棲獣人型デジモン。ダイビングスーツを着たような独特な見た目をしており水中戦のプロ。必殺技は『ストライクフィッシング』。",
-        mdmon: "深い深海に住むデビモンの亜種。勝つためには手段を選ばず、相手が戦意を喪失しても攻撃の手をゆるめない。背中から生えた二本の触手は、それぞれ意思を持っていて、獲物を取り合って勝手に行動する。必殺技は口から猛毒の墨を発射する『ギルティブラック』。",
-        tetismon: "デジモンの発祥の地“ネットの海”の最も深い海溝で発見された記録がある、女性の姿をした水棲獣人型の完全体デジモン。とても広大な自身のテリトリーに安寧をもたらし、喧噪で脅かすデジモンには一瞬にして詰め寄り鉄槌を下す。テリトリーを荒らすものに慈悲はないが、救助を求めて入ったデジモンには優しく接し安全な場所まで導く、弱きを助け強きを挫く精神を持つ。掌に電撃を溜めることで拳を飛ばす『ビリースマッシャー』、蹴り上げた敵に組み合わせた電流の両拳を振り下ろす『ハンマーサンダー』や、相手との空間を消失させて瞬間転移する『アドゥワールド』で侵略者を排除する。さらに触手から様々な薬を生成して流し込む『ドクテアーゼ』は、味方には傷の治癒や一時的な力のブースト、敵ならば劇毒で内部から分解し死に至らしめる。",
-        emarmeymon: "古代のネットの海を支配していた伝説の十闘士の一体である究極体デジモン。美しく気高き海の女神です。必殺技は「グレートトロンバ」。",
-        marine: "小さなマスコットのような外見に反して滅多にその姿を見ることのできない、ネットの海に棲む妖精型デジモン。エンジェモンの名前を持っているが、生態系としてはエンジェモン系とは全く別の種族である。マリンエンジェモンの首についているリングはホーリーリングと呼ばれ、テイルモンやエンジェウーモンなども付けていることから聖なるデジモンと何か関係があると思われる。そこに刻まれている文字は今だ解明されていない。基本的に戦闘は好まないが、必殺技である『オーシャンラブ』はあらゆる敵の戦意を喪失させ、結果的に勝利をおさめることになる。",
-        afmon: "広大な“ネットの海”のどこでも回遊し、様々な海生デジモンと縁を結ぶサイボーグ型デジモン。全身を覆うボディースーツにより超高圧層への潜水を可能とし天使型デジモンや神人型デジモンより、ネットの海における悪と判断した者を断罪することを許されている。戦いが始まれば普段の陽気さは荒れ狂う海のように一変し、罪人へ裁きの一撃をお見舞いする。必殺技は、拳から凍気を撃ち出し相手を凍結させる『クリスタルフリーザー』、水平に振るった手から飛び出す超高圧水のカッター『アクアザンバー』、足に電撃を纏わせてキックを叩き込む『ライバーンブレイク』がある。また数体のクラゲユニットを展開して電磁シールド『アンブレディフェンダー』を形成し、自分や仲間を守ることができる。",
-        kutiramon: "小さなマスコットのような外見に反してネットの海の深部に生息し、暗い海の中で胸のドクロ模様だけが不気味に浮かび上がって見えることから別名「海の死霊」と呼ばれている。自ら戦うことに積極的ではなく、自身より程度の低い水棲デジモンを洗脳して使役する。その姿形とめったに見られない存在であることから、マリンエンジェモンと類似している点も多いが、関係性は今のところ不明である。深海の暗闇のような底知れぬ恐怖のオーラで戦意を奪う必殺技『オーシャンヘル』は、時にこれを受けたデジモンをクティーラモンの傀儡に成り下がらせる。口を大きく開いて鞭のようにしなる三本の長い舌で攻撃する『バッカルラッシュ』と、激しい渦潮を発生させ、ドリルのように相手の身体を削ぐ『アクアグラインダー』は、その小さな体躯からは想像し得ない破壊力を持つ。"
+        zurumon: "超悪質のコンピュータウイルスとコンピューターを悪用する人間の負の念が融合して生まれたスライムのような粘液状のボディを持つ幼年期Ⅰデジモン。",
+        pagumon: "ズルモンの進化系、幼年期Ⅱの小型デジモン。",
+        gizamon: "カエルのような体型に背中に4枚の刃の背鰭と手足に水を掻くための鰭がついた水棲哺乳類型デジモンの成長期。",
+        kaimon: "硬い貝殻に覆われた水棲型デジモン。",
+        ganimon: "甲殻類特有の硬い外骨格と強いハサミを持つ甲殻類型デジモン。",
+        jerrymon: "クラゲのようなプニプニとした頭を持つ軟体型デジモン。",
+        lanamon: "伝説の十闘士の一人が残した水のヒューマンスピリットで進化したハイブリッド体。",
+        ebidramon: "エビのような姿をした巨大な水棲竜型デジモン。",
+        gesomon: "白いイカのような姿をした水棲軟体型デジモン。",
+        teslajerrymon: "刺激と快感を求めて格闘技のデータを吸収して成長した成熟期のデジモン。",
+        karumaramon: "伝説の十闘士の一人が残した水のビーストスピリットで進化したハイブリッド体。",
+        hmon: "人間のような手足を持つ水棲獣人型デジモン。",
+        mdmon: "深い深海に住むデビモンの亜種。",
+        tetismon: "ネットの海の最も深い海溝で発見された記録がある女性の姿をした水棲獣人型の完全体デジモン。",
+        emarmeymon: "古代のネットの海を支配していた伝説の十闘士の一体である究極体デジモン。",
+        marine: "ネットの海に棲む妖精型デジモン。",
+        afmon: "サイボーグ型デジモン。",
+        kutiramon: "ネットの海の深部に生息し海の死霊と呼ばれているデジモン。"
     };
 
     const PERSONALITIES = {
-        suinao: {
-            name: "素直",
-            greetings: [`{NAME}、こんにちは！お話しよ！`, `あ！{NAME}だ！まってたよ！なにしてあそぶ？`, `ふわぁ…… {NAME}、いま起きたの。ねむいぃ……`, `{NAME}、おなかすいたぁ！なんかちょーだい！`, `{NAME}！あえてうれしいなー！`, `じーーーっ…… {NAME}、あそんであそんでー！`],
-            prompt: `【性格: 素直】相手に真っ直ぐで素直な性格です。明るく無邪気に接してください。`
-        },
-        nekketsu: {
-            name: "熱血",
-            greetings: [`よっ！{NAME}！元気万端だぜ！`, `オッス！{NAME}、今日も気合い入れていこうぜ！`, `{NAME}！特訓の時間か！？いつでもいけるぞ！`, `うおおっ！{NAME}が来たぞ～！何して遊ぶんだぜ！？`, `腹減ったぜー！{NAME}、なんか美味いもん食おうぜ！`, `{NAME}！今日も1日、全力全開だぜーっ！`],
-            prompt: `【性格: 熱血】元気がいっぱいで熱血な性格です。「～だぜ！」「～ぞ！」といった元気で力強い言葉遣いを使います。`
-        },
-        oshitoyaka: {
-            name: "おしとやか",
-            greetings: [`まあ、{NAME}様…！本日もお会いできて嬉しゅうございますわ。`, `ごきげんよう、{NAME}様。お茶でもいかがですの？`, `ふふっ、{NAME}様のお顔が見られて心が安らぎますわ。`, `{NAME}様、本日はどのようなお話をしていただけますの？`, `まあ…{NAME}様、少しお疲れではありませんこと？無理はなさらないでくださいね。`, `{NAME}様にお会いできるのを、ずっと楽しみにしておりましたの♪`],
-            prompt: `【性格: おしとやか】丁寧で上品なおしとやかな性格です。「わたくし」「～ですわ」「～様」などの丁寧で気品ある言葉遣いを使います。`
-        },
-        cool: {
-            name: "クール",
-            greetings: [`やあ、{NAME}。待っていたぞ。`, `ふっ…{NAME}か。ちょうどお前と話したいと思っていたところだ。`, `{NAME}、今日はどんな一日だった？聞かせてみろ。`, `よう、{NAME}。焦らずゆっくり話そう。`, `{NAME}の顔を見ると、なんだか落ち着くな…。`, `お前が来るのは分かっていたさ。…さあ、何から話す？`],
-            prompt: `【性格: クール】落ち着いていてクールな性格です。「～だな」「ふっ…」といった少し大人っぽくかっこいい言い回しを使います。`
-        },
-        nonki: {
-            name: "のんき",
-            greetings: [`ん〜〜？{NAME}だ〜！あそぼ〜〜！`, `ふぁ〜あ…{NAME}〜、一緒にひなたぼっこしよ〜？`, `にひひ〜！{NAME}、おやつ持ってたりしない〜？`, `やほ〜！{NAME}〜、今日もゆったりいこうね〜〜。`, `あ、{NAME}〜！ごろごろするの、気持ちいいよ〜？`, `{NAME}〜、なにか楽しいこと教えて〜〜？`],
-            prompt: `【性格: のんき】マイペースでのんびりした性格です。「〜だ〜」「〜よ〜」「にひひ〜」といった語尾を伸ばしたゆったりした口調を使います。`
-        },
-        wagamama: {
-            name: "ワガママ",
-            greetings: [`ちょっと{NAME}！遅いじゃない！アタシを待たせるなんていい度胸ね！`, `フンッ！{NAME}、やっと来たのね！アタシ退屈してたんだから！`, `あら{NAME}。どうせアタシにかまってほしいんでしょ？`, `ねえ{NAME}！今日のアタシ、昨日より可愛くないかしら！？`, `ちょっと{NAME}、美味しいものでも献上しなさいよ！`, `なによ{NAME}、アタシに見惚れちゃったの～？ま、当然よね♪`],
-            prompt: `【性格: ワガママ】勝気でちょっと高飛車な性格です。「アタシ」「～かしら」「～じゃないの！」といったツンデレな口調を使います。`
-        },
-        mesugaki: {
-            name: "メスガキ",
-            greetings: [`あれれ～♡{NAME}だ～♡キャハハ♡`, `{NAME}じゃ～ん♡何ナニ～？`, `ノロマ{NAME}～♡来るの遅すぎ～♡`, `やっときたの～？{NAME}、つまんな～い♡`, `{NAME}、なにその反抗的な眼は～？`, `超超退屈なんですけど～♡{NAME}遊んでよ～♡`],
-            prompt: `【性格: メスガキ】生意気で小悪魔な性格です。「ウチ」「オマエ」「ざ～こ♡」「キャハハ♡」といった口調を使います。`
-        },
-        shy: {
-            name: "シャイ",
-            greetings: [`あ…えっと…{NAME}さん…っ！こ、こんにちは…！`, `は、はわわ…！{NAME}さん、来てくれたんですね…っ！`, `あの…{NAME}さん…私とお話…してくれますか…？`, `っ…！{NAME}さん…！びっくりしたけど…すごく嬉しいです…！`, `えへへ…{NAME}さんの顔が見れて…ちょっと安心しました…っ。`, `あの…{NAME}さん…今日はどんなお話をするんですか…？`],
-            prompt: `【性格: シャイ】内気で人見知りな性格です。「私」「え…えっと…」「はわわ」といったおどおどした口調を使います。`
-        }
+        suinao: { name: "素直", greetings: [`{NAME}、こんにちは！お話しよ！`, `あ！{NAME}だ！まってたよ！なにしてあそぶ？`], prompt: `【性格: 素直】相手に真っ直ぐで素直な性格です。` },
+        nekketsu: { name: "熱血", greetings: [`よっ！{NAME}！元気万端だぜ！`, `オッス！{NAME}、今日も気合い入れていこうぜ！`], prompt: `【性格: 熱血】元気がいっぱいで熱血な性格です。` },
+        oshitoyaka: { name: "おしとやか", greetings: [`まあ、{NAME}様…！本日もお会いできて嬉しゅうございますわ。`], prompt: `【性格: おしとやか】丁寧で上品なおしとやかな性格です。` },
+        cool: { name: "クール", greetings: [`やあ、{NAME}。待っていたぞ。`], prompt: `【性格: クール】落ち着いていてクールな性格です。` },
+        nonki: { name: "のんき", greetings: [`ん〜〜？{NAME}だ〜！あそぼ〜〜！`], prompt: `【性格: のんき】マイペースでのんびりした性格です。` },
+        wagamama: { name: "ワガママ", greetings: [`ちょっと{NAME}！遅いじゃない！`], prompt: `【性格: ワガママ】勝気でちょっと高飛車な性格です。` },
+        mesugaki: { name: "メスガキ", greetings: [`あれれ～♡{NAME}だ～♡キャハハ♡`], prompt: `【性格: メスガキ】生意気で小悪魔な性格です。` },
+        shy: { name: "シャイ", greetings: [`あ…えっと…{NAME}さん…っ！こ、こんにちは…！`], prompt: `【性格: シャイ】内気で人見知りな性格です。` }
     };
 
-
-    // --- ステータス表示モーダル ---
+    // モーダル関連
     function toggleStatusModal(show) {
         const modal = document.getElementById('statusModal');
         if (show) {
@@ -628,30 +756,20 @@
     }
 
     function closeStatusModal(event) {
-        if (event.target.id === 'statusModal') {
-            toggleStatusModal(false);
-        }
-    }
-
-    function getNextEvolutionThreshold() {
-        if (currentForm === 'zurumon') return 10;
-        if (currentForm === 'pagumon') return 20;
-        if (CHILD_DIGIMONS.includes(currentForm)) return 30; // ★修正：全成長期デジモンに対応★
-        if (ADULT_DIGIMONS.includes(currentForm)) return 40;
-        if (PERFECT_DIGIMONS.includes(currentForm)) return 70;
-        if (ULTIMATE_DIGIMONS.includes(currentForm)) return 80;
-        return 0;
+        if (event.target.id === 'statusModal') toggleStatusModal(false);
     }
 
     function updateStatusModalData() {
         document.getElementById('statName').innerText = DIGIMON_NAMES[currentForm] || "デジモン";
-        
+        const data = DIGIMON_DATA[currentForm] || { type: "フリー" };
+        document.getElementById('statType').innerText = data.type;
+
         const pInfo = PERSONALITIES[currentPersonalityKey];
         document.getElementById('statPersonality').innerText = pInfo ? pInfo.name : "不明";
 
         const threshold = getNextEvolutionThreshold();
         const labelText = ULTIMATE_DIGIMONS.includes(currentForm) ? "てんせいまで" : "しんかまで";
-        document.querySelector('#statusModal .status-row:nth-child(4) .status-label').innerText = `【 ${labelText} 】`;
+        document.querySelector('#statusModal .status-row:nth-child(5) .status-label').innerText = `【 ${labelText} 】`;
         document.getElementById('statEvolutionCount').innerText = `${talkCount} / ${threshold}`;
 
         document.getElementById('statNormal').innerText = emotionCounts.normal || 0;
@@ -660,13 +778,37 @@
         document.getElementById('statSad').innerText = emotionCounts.sad || 0;
     }
 
-    // --- セーブ/ロード機能 ---
+    function getNextEvolutionThreshold() {
+        if (currentForm === 'zurumon') return 10;
+        if (currentForm === 'pagumon') return 20;
+        if (CHILD_DIGIMONS.includes(currentForm)) return 30;
+        if (ADULT_DIGIMONS.includes(currentForm)) return 40;
+        if (PERFECT_DIGIMONS.includes(currentForm)) return 70;
+        if (ULTIMATE_DIGIMONS.includes(currentForm)) return 80;
+        return 0;
+    }
+
+    function canBattle() {
+        return (CHILD_DIGIMONS.includes(currentForm) || 
+               ADULT_DIGIMONS.includes(currentForm) || 
+               PERFECT_DIGIMONS.includes(currentForm) || 
+               ULTIMATE_DIGIMONS.includes(currentForm)) && battleTickets > 0;
+    }
+
+    function updateBattleButtonState() {
+        const btn = document.getElementById('battleOpenBtn');
+        document.getElementById('battleTicketDisplay').innerText = battleTickets;
+        btn.disabled = !canBattle();
+    }
+
     function saveData() {
         const state = {
             currentForm: currentForm,
             currentPersonalityKey: currentPersonalityKey,
             talkCount: talkCount,
             careCount: careCount,
+            talkForBattleCount: talkForBattleCount,
+            battleTickets: battleTickets,
             emotionCounts: emotionCounts,
             bgValue: document.getElementById('bgSelect').value
         };
@@ -675,9 +817,7 @@
 
     function loadData() {
         const savedApiKey = localStorage.getItem('geminiApiKey');
-        if (savedApiKey) {
-            document.getElementById('apiKey').value = savedApiKey;
-        }
+        if (savedApiKey) document.getElementById('apiKey').value = savedApiKey;
 
         const savedState = localStorage.getItem('digimonState_deep');
         if (savedState) {
@@ -687,6 +827,8 @@
                 currentPersonalityKey = state.currentPersonalityKey || '';
                 talkCount = state.talkCount || 0;
                 careCount = state.careCount || 0;
+                talkForBattleCount = state.talkForBattleCount || 0;
+                battleTickets = state.battleTickets || 0;
                 if (state.emotionCounts) emotionCounts = state.emotionCounts;
                 
                 if (state.bgValue !== undefined) {
@@ -694,16 +836,14 @@
                     changeBackground();
                 }
             } catch (e) {
-                console.error("セーブデータの読み込み失敗:", e);
+                console.error("ロード失敗:", e);
             }
         }
     }
 
     function saveApiKey() {
         const key = document.getElementById('apiKey').value.trim();
-        if (key) {
-            localStorage.setItem('geminiApiKey', key);
-        }
+        if (key) localStorage.setItem('geminiApiKey', key);
     }
 
     function updateDigimonScale() {
@@ -749,8 +889,7 @@
 【デジモン情報】
 ${detail}
 
-以下の【性格指定】の口調やトーンを強く意識して会話してください。
-
+【性格指定】の口調やトーンを強く意識して会話してください。
 ${pInfo ? pInfo.prompt : ""}
 
 会話の返答は、必ず以下のJSON形式でのみ出力してください。
@@ -766,17 +905,14 @@ ${pInfo ? pInfo.prompt : ""}
 
     window.onload = function() {
         loadData();
-
-        if (!currentPersonalityKey) {
-            rollRandomPersonality();
-        }
+        if (!currentPersonalityKey) rollRandomPersonality();
 
         updatePersonalityDisplay();
         updateSystemInstruction();
         updateDigimonScale();
+        updateBattleButtonState();
 
-        const initialGif = `${currentForm}_normal.gif`;
-        document.getElementById('digimonImage').src = initialGif;
+        document.getElementById('digimonImage').src = `${currentForm}_normal.gif`;
         document.getElementById('digimonName').innerText = DIGIMON_NAMES[currentForm] || "デジモン";
 
         const savedName = localStorage.getItem('trainerName');
@@ -836,7 +972,6 @@ ${pInfo ? pInfo.prompt : ""}
         }
 
         saveApiKey();
-
         modelListLog.innerText = "確認中...";
         modelListLog.style.display = 'block';
 
@@ -898,7 +1033,6 @@ ${pInfo ? pInfo.prompt : ""}
 
         isPerformingAction = true;
         emotionCounts[emotionKey] += addAmount;
-
         document.getElementById('dialogueText').innerHTML = messageText;
 
         const digimonImage = document.getElementById('digimonImage');
@@ -909,11 +1043,9 @@ ${pInfo ? pInfo.prompt : ""}
         updateDigimonScale();
         digimonImage.style.display = 'none';
 
-        const digimonGifName = `${currentForm}_${emotionKey}.gif`;
-        actionDigimonImg.src = digimonGifName;
-        actionDigimonImg.classList.add('facing-right'); // お世話アクション中は右向きにする
+        actionDigimonImg.src = `${currentForm}_${emotionKey}.gif`;
+        actionDigimonImg.classList.add('facing-right');
         actionEffectImg.src = actionGifName;
-
         actionContainer.style.display = 'flex';
 
         careCount = 0;
@@ -922,15 +1054,12 @@ ${pInfo ? pInfo.prompt : ""}
 
         setTimeout(() => {
             actionContainer.style.display = 'none';
-            actionDigimonImg.classList.remove('facing-right'); // ★修正：アクション終了時に向きを解除★
-
-            const normalGifName = `${currentForm}_normal.gif`;
-            digimonImage.src = normalGifName;
+            actionDigimonImg.classList.remove('facing-right');
+            digimonImage.src = `${currentForm}_normal.gif`;
             digimonImage.style.display = 'block';
 
             isPerformingAction = false;
             updateCareUI();
-
             checkEvolutionProgress();
         }, 4000);
     }
@@ -941,13 +1070,10 @@ ${pInfo ? pInfo.prompt : ""}
         const apiKey = document.getElementById('apiKey').value.trim();
         const userInput = document.getElementById('userInput').value.trim();
         const dialogueText = document.getElementById('dialogueText');
-        const digimonImage = document.getElementById('digimonImage');
         const errorLog = document.getElementById('errorLog');
         const modelSelect = document.getElementById('modelSelect');
 
         errorLog.style.display = 'none';
-        errorLog.innerText = '';
-
         if (!apiKey) {
             alert('最初にGeminiのAPIキーを入力してください！');
             return;
@@ -955,7 +1081,6 @@ ${pInfo ? pInfo.prompt : ""}
         if (!userInput) return;
 
         saveApiKey();
-
         const selectedModel = modelSelect.value || 'gemini-3.1-flash-lite';
         const currentTrainerName = localStorage.getItem('trainerName') || "パートナー";
         const activeInstruction = window.SYSTEM_INSTRUCTION.replace(/{NAME}/g, currentTrainerName);
@@ -965,13 +1090,8 @@ ${pInfo ? pInfo.prompt : ""}
         document.getElementById('userInput').blur();
 
         const url = `https://generativelanguage.googleapis.com/v1/models/${selectedModel}:generateContent?key=${apiKey}`;
-
         const requestBody = {
-            contents: [{
-                parts: [{
-                    text: `${activeInstruction}\n\n話しかけているパートナーの名前: "${currentTrainerName}"\nUser: "${userInput}"\nYour Answer:`
-                }]
-            }],
+            contents: [{ parts: [{ text: `${activeInstruction}\n\n話しかけているパートナーの名前: "${currentTrainerName}"\nUser: "${userInput}"\nYour Answer:` }] }],
             generationConfig: {
                 responseMimeType: "application/json",
                 responseSchema: {
@@ -1001,21 +1121,25 @@ ${pInfo ? pInfo.prompt : ""}
             const result = JSON.parse(data.candidates[0].content.parts[0].text.trim());
 
             const emotion = result.emotion || 'normal';
-            let gifFileName = `${currentForm}_${emotion}.gif`;
-            digimonImage.src = gifFileName;
-
+            document.getElementById('digimonImage').src = `${currentForm}_${emotion}.gif`;
             dialogueText.innerText = result.text;
 
             talkCount++;
-            if (careCount < 5) {
-                careCount++;
-                updateCareUI();
+            if (careCount < 5) careCount++;
+
+            // 3回会話ごとにバトル権付与
+            talkForBattleCount++;
+            if (talkForBattleCount >= 3) {
+                talkForBattleCount = 0;
+                battleTickets++;
             }
 
             if (emotionCounts.hasOwnProperty(emotion)) {
                 emotionCounts[emotion]++;
             }
 
+            updateCareUI();
+            updateBattleButtonState();
             saveData();
             checkEvolutionProgress();
 
@@ -1026,45 +1150,17 @@ ${pInfo ? pInfo.prompt : ""}
         }
     }
 
-    // 感情値から進化先を決定する関数
     function getNextFormByEmotion(currentStage) {
-        const dominant = getDominantEmotion(); // 最も高い感情値のキーを呼び出し
-        
-        // 同率や0などで判定できない場合はデフォルトで 'happy'（または 'normal'）にする
-        const emotion = dominant || 'happy';
-
-        // 世代ごとの感情別進化マップ
+        const dominant = getDominantEmotion() || 'happy';
         const evolutionMap = {
-            child: {
-                normal: 'kaimon',
-                happy: 'jerrymon',
-                angry: 'ganimon',
-                sad: 'gizamon'
-            },
-            adult: {
-                normal: 'gesomon',
-                happy: 'teslajerrymon',
-                angry: 'ebidramon',
-                sad: 'lanamon'
-            },
-            perfect: {
-                normal: 'hmon',
-                happy: 'tetismon',
-                angry: 'mdmon',
-                sad: 'karumaramon'
-            },
-            ultimate: {
-                normal: 'marine',
-                happy: 'afmon',
-                angry: 'kutiramon',
-                sad: 'emarmeymon'
-            }
+            child: { normal: 'kaimon', happy: 'jerrymon', angry: 'ganimon', sad: 'gizamon' },
+            adult: { normal: 'gesomon', happy: 'teslajerrymon', angry: 'ebidramon', sad: 'lanamon' },
+            perfect: { normal: 'hmon', happy: 'tetismon', angry: 'mdmon', sad: 'karumaramon' },
+            ultimate: { normal: 'marine', happy: 'afmon', angry: 'kutiramon', sad: 'emarmeymon' }
         };
-
-        return evolutionMap[currentStage][emotion];
+        return evolutionMap[currentStage][dominant];
     }
 
-    // --- 進化・転生判定ロジック ---
     function getDominantEmotion() {
         let maxCount = -1;
         let dominantEmotions = [];
@@ -1079,41 +1175,28 @@ ${pInfo ? pInfo.prompt : ""}
             }
         });
 
-        if (dominantEmotions.length !== 1 || maxCount === 0) {
-            return null;
-        }
+        if (dominantEmotions.length !== 1 || maxCount === 0) return null;
         return dominantEmotions[0];
     }
 
     function checkEvolutionProgress() {
         if (isPerformingAction) return;
 
-        // 1. ズルモン ➔ パグモン (会話10回)
         if (currentForm === 'zurumon' && talkCount >= 10) {
             executeEvolution('pagumon', 'ズルモンは パグモン に進化した！');
-        }
-        // 2. パグモン ➔ 成長期 (会話20回)
-        else if (currentForm === 'pagumon' && talkCount >= 20) {
+        } else if (currentForm === 'pagumon' && talkCount >= 20) {
             const nextForm = getNextFormByEmotion('child');
             executeEvolution(nextForm, `パグモンは ${DIGIMON_NAMES[nextForm]} に進化した！`);
-        }
-        // 3. 成長期 ➔ 成熟期 (会話30回)
-        else if (CHILD_DIGIMONS.includes(currentForm) && talkCount >= 30) {
+        } else if (CHILD_DIGIMONS.includes(currentForm) && talkCount >= 30) {
             const nextForm = getNextFormByEmotion('adult');
             executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に進化した！`);
-        }
-        // 4. 成熟期 ➔ 完全体 (会話40回)
-        else if (ADULT_DIGIMONS.includes(currentForm) && talkCount >= 40) {
+        } else if (ADULT_DIGIMONS.includes(currentForm) && talkCount >= 40) {
             const nextForm = getNextFormByEmotion('perfect');
             executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に超進化した！`);
-        }
-        // 5. 完全体 ➔ 究極体 (会話70回)
-        else if (PERFECT_DIGIMONS.includes(currentForm) && talkCount >= 70) {
+        } else if (PERFECT_DIGIMONS.includes(currentForm) && talkCount >= 70) {
             const nextForm = getNextFormByEmotion('ultimate');
             executeEvolution(nextForm, `${DIGIMON_NAMES[currentForm]}は ${DIGIMON_NAMES[nextForm]} に究極進化した！`);
-        }
-        // 6. 究極体 ➔ 転生 (会話80回)
-        else if (ULTIMATE_DIGIMONS.includes(currentForm) && talkCount >= 80) {
+        } else if (ULTIMATE_DIGIMONS.includes(currentForm) && talkCount >= 80) {
             rebirthToZurumon();
         }
     }
@@ -1126,6 +1209,7 @@ ${pInfo ? pInfo.prompt : ""}
         updatePersonalityDisplay();
         updateSystemInstruction();
         updateDigimonScale();
+        updateBattleButtonState();
 
         document.getElementById('dialogueText').innerText = `${msg}（せいかくが「${PERSONALITIES[currentPersonalityKey].name}」になったよ！）`;
         document.getElementById('digimonName').innerText = DIGIMON_NAMES[nextForm];
@@ -1147,6 +1231,7 @@ ${pInfo ? pInfo.prompt : ""}
         updatePersonalityDisplay();
         updateSystemInstruction();
         updateDigimonScale();
+        updateBattleButtonState();
 
         document.getElementById('digimonImage').src = "zurumon_normal.gif";
         document.getElementById('dialogueText').innerText = `${prevName}はデジタマへと還り、ズルモンとして生まれ変わった！（せいかく：${PERSONALITIES[currentPersonalityKey].name}）`;
@@ -1156,6 +1241,231 @@ ${pInfo ? pInfo.prompt : ""}
         emotionCounts = { happy: 0, angry: 0, sad: 0, normal: 0 };
         updateCareUI();
         saveData();
+    }
+
+
+    // ==========================================
+    // --- バトル演出・進行ロジック ---
+    // ==========================================
+
+    function toggleBattleSelectModal(show) {
+        if (show && !canBattle()) {
+            if (battleTickets <= 0) {
+                alert("バトル権がありません！あと会話を重ねて開放してください。");
+            } else {
+                alert("バトルは成長期以降から解放されます！");
+            }
+            return;
+        }
+        document.getElementById('battleSelectModal').style.display = show ? 'flex' : 'none';
+    }
+
+    function getTypeMultiplier(atkType, defType) {
+        if (atkType === "アンノウン" || defType === "アンノウン") return 0.5;
+        if (atkType === "バリアブル" || defType === "バリアブル") return 2.0;
+        if (atkType === "フリー" || defType === "フリー") return 1.0;
+
+        if (atkType === "ワクチン" && defType === "ウイルス") return 2.0;
+        if (atkType === "ウイルス" && defType === "データ") return 2.0;
+        if (atkType === "データ" && defType === "ワクチン") return 2.0;
+
+        if (atkType === "ワクチン" && defType === "データ") return 0.5;
+        if (atkType === "ウイルス" && defType === "ワクチン") return 0.5;
+        if (atkType === "データ" && defType === "ウイルス") return 0.5;
+
+        return 1.0;
+    }
+
+    function calculateFighterStats(formKey, emotions = { normal:0, happy:0, angry:0, sad:0 }, isPlayer = true) {
+        const base = DIGIMON_DATA[formKey] || { type:"フリー", baseHp:100, baseAtk:30, baseSpAtk:30, baseDef:20, baseSpd:20 };
+        return {
+            isPlayer: isPlayer,
+            name: DIGIMON_NAMES[formKey],
+            type: base.type,
+            formKey: formKey,
+            maxHp: base.baseHp + (emotions.normal * 2),
+            hp: base.baseHp + (emotions.normal * 2),
+            atk: base.baseAtk + (emotions.angry * 2),
+            spAtk: base.baseSpAtk + (emotions.happy * 2),
+            def: base.baseDef + (emotions.sad * 2),
+            spd: base.baseSpd,
+            imgEl: document.getElementById(isPlayer ? 'bPlayerImg' : 'bEnemyImg')
+        };
+    }
+
+    let currentBattleInterval = null;
+
+    function startBattle(difficulty) {
+        if (battleTickets <= 0) return;
+        battleTickets--; // バトル権消費
+        updateBattleButtonState();
+        saveData();
+
+        toggleBattleSelectModal(false);
+
+        let enemyPool = [];
+        if (difficulty === 1) enemyPool = CHILD_DIGIMONS;
+        else if (difficulty === 2) enemyPool = ADULT_DIGIMONS;
+        else if (difficulty === 3) enemyPool = PERFECT_DIGIMONS;
+        else enemyPool = ULTIMATE_DIGIMONS;
+
+        const enemyForm = enemyPool[Math.floor(Math.random() * enemyPool.length)];
+        const enemyEmotions = {
+            normal: difficulty * 5 + Math.floor(Math.random() * 5),
+            happy: difficulty * 5 + Math.floor(Math.random() * 5),
+            angry: difficulty * 5 + Math.floor(Math.random() * 5),
+            sad: difficulty * 5 + Math.floor(Math.random() * 5)
+        };
+
+        const player = calculateFighterStats(currentForm, emotionCounts, true);
+        const enemy = calculateFighterStats(enemyForm, enemyEmotions, false);
+
+        const playerMultiplier = getTypeMultiplier(player.type, enemy.type);
+        const enemyMultiplier = getTypeMultiplier(enemy.type, player.type);
+
+        player.atk = Math.floor(player.atk * playerMultiplier);
+        player.spAtk = Math.floor(player.spAtk * playerMultiplier);
+        enemy.atk = Math.floor(enemy.atk * enemyMultiplier);
+        enemy.spAtk = Math.floor(enemy.spAtk * enemyMultiplier);
+
+        // UI設定
+        document.getElementById('bPlayerName').innerText = `${player.name} (${player.type})`;
+        player.imgEl.src = `${player.formKey}_normal.gif`;
+        player.imgEl.className = "fighter-img facing-right" + ((ADULT_DIGIMONS.includes(player.formKey) || PERFECT_DIGIMONS.includes(player.formKey) || ULTIMATE_DIGIMONS.includes(player.formKey)) ? " adult-size" : "");
+
+        document.getElementById('bEnemyName').innerText = `${enemy.name} (${enemy.type})`;
+        enemy.imgEl.src = `${enemy.formKey}_normal.gif`;
+        enemy.imgEl.className = "fighter-img" + ((ADULT_DIGIMONS.includes(enemy.formKey) || PERFECT_DIGIMONS.includes(enemy.formKey) || ULTIMATE_DIGIMONS.includes(enemy.formKey)) ? " adult-size" : "");
+
+        document.getElementById('battleCloseBtn').style.display = 'none';
+        document.getElementById('battleScreenModal').style.display = 'flex';
+
+        const logBox = document.getElementById('battleLog');
+        logBox.innerText = `野生の ${enemy.name} があらわれた！\n`;
+        if (playerMultiplier > 1.0) logBox.innerText += `👉 相性有利！攻撃力が2倍アップ！\n`;
+        if (playerMultiplier < 1.0) logBox.innerText += `👉 相性不利… 攻撃力が半減！\n`;
+
+        updateHpUI(player, enemy);
+
+        let turn = 1;
+        currentBattleInterval = setInterval(async () => {
+            if (player.hp <= 0 || enemy.hp <= 0) {
+                clearInterval(currentBattleInterval);
+                finishBattle(player, enemy, difficulty);
+                return;
+            }
+
+            logBox.innerText += `\n--- ターン ${turn} --- \n`;
+
+            let first = player, second = enemy;
+            if (enemy.spd > player.spd) {
+                first = enemy; second = player;
+            }
+
+            // 1人目の攻撃
+            await performBattleTurn(first, second, logBox);
+            updateHpUI(player, enemy);
+
+            // 2人目の反撃（生存していれば）
+            if (second.hp > 0) {
+                await performBattleTurn(second, first, logBox);
+                updateHpUI(player, enemy);
+            }
+
+            logBox.scrollTop = logBox.scrollHeight;
+            turn++;
+        }, 2200);
+    }
+
+    // アニメーションを伴う攻撃処理（方向修正版）
+    function performBattleTurn(attacker, defender, logBox) {
+        return new Promise(resolve => {
+            const isSpecial = Math.random() < 0.5;
+            const attackVal = isSpecial ? attacker.spAtk : attacker.atk;
+            const attackName = isSpecial ? "特殊攻撃" : "物理攻撃";
+
+            let damage = Math.max(5, attackVal - Math.floor(defender.def / 2));
+            damage = Math.floor(damage * (0.9 + Math.random() * 0.2));
+
+            // プレイヤー側（左側）かどうかの判定クラス
+            const facingClass = attacker.isPlayer ? " facing-right" : "";
+            const defenderFacingClass = defender.isPlayer ? " facing-right" : "";
+
+            // 【演出1】攻撃側: angry.gif + 横揺れ (プレイヤー側なら右向き反転を保持)
+            attacker.imgEl.src = `${attacker.formKey}_angry.gif`;
+            attacker.imgEl.className = `fighter-img${facingClass} shake-horizontal` + 
+                ((ADULT_DIGIMONS.includes(attacker.formKey) || PERFECT_DIGIMONS.includes(attacker.formKey) || ULTIMATE_DIGIMONS.includes(attacker.formKey)) ? " adult-size" : "");
+
+            logBox.innerText += `${attacker.name} の ${attackName}！\n`;
+
+            setTimeout(() => {
+                // 攻撃アニメーション終了時、元の通常姿へ
+                attacker.imgEl.className = `fighter-img${facingClass}` + 
+                    ((ADULT_DIGIMONS.includes(attacker.formKey) || PERFECT_DIGIMONS.includes(attacker.formKey) || ULTIMATE_DIGIMONS.includes(attacker.formKey)) ? " adult-size" : "");
+                attacker.imgEl.src = `${attacker.formKey}_normal.gif`;
+
+                // 【演出2】被弾側: sad.gif + ダメージ計算
+                defender.hp = Math.max(0, defender.hp - damage);
+                defender.imgEl.src = `${defender.formKey}_sad.gif`;
+                defender.imgEl.className = `fighter-img${defenderFacingClass}` + 
+                    ((ADULT_DIGIMONS.includes(defender.formKey) || PERFECT_DIGIMONS.includes(defender.formKey) || ULTIMATE_DIGIMONS.includes(defender.formKey)) ? " adult-size" : "");
+                
+                logBox.innerText += `${defender.name} に ${damage} ダメージ！\n`;
+
+                setTimeout(() => {
+                    if (defender.hp > 0) {
+                        defender.imgEl.src = `${defender.formKey}_normal.gif`;
+                    }
+                    resolve();
+                }, 600);
+            }, 600);
+        });
+    }
+
+    function updateHpUI(player, enemy) {
+        const pPct = Math.max(0, (player.hp / player.maxHp) * 100);
+        const ePct = Math.max(0, (enemy.hp / enemy.maxHp) * 100);
+
+        document.getElementById('bPlayerHpBar').style.width = `${pPct}%`;
+        document.getElementById('bPlayerHpText').innerText = `HP: ${player.hp}/${player.maxHp}`;
+
+        document.getElementById('bEnemyHpBar').style.width = `${ePct}%`;
+        document.getElementById('bEnemyHpText').innerText = `HP: ${enemy.hp}/${enemy.maxHp}`;
+    }
+
+    function finishBattle(player, enemy, difficulty) {
+        const logBox = document.getElementById('battleLog');
+        const rewardAmount = difficulty * 2;
+
+        if (player.hp > 0) {
+            // 勝利演出：自デジモン happy.gif ＋ 縦揺れ / 敵デジモン sad.gif
+            player.imgEl.src = `${player.formKey}_happy.gif`;
+            player.imgEl.classList.add('bounce-vertical');
+            enemy.imgEl.src = `${enemy.formKey}_sad.gif`;
+
+            logBox.innerText += `\n🎉 バトルに勝利した！\nすべての感情値が +${rewardAmount} 上がった！`;
+            emotionCounts.normal += rewardAmount;
+            emotionCounts.happy += rewardAmount;
+            emotionCounts.angry += rewardAmount;
+            emotionCounts.sad += rewardAmount;
+            saveData();
+        } else {
+            // 敗北演出：自デジモン sad.gif / 敵デジモン happy.gif
+            player.imgEl.src = `${player.formKey}_sad.gif`;
+            enemy.imgEl.src = `${enemy.formKey}_happy.gif`;
+
+            logBox.innerText += `\n💀 バトルに敗北した…`;
+        }
+
+        logBox.scrollTop = logBox.scrollHeight;
+        document.getElementById('battleCloseBtn').style.display = 'block';
+    }
+
+    function closeBattleScreen() {
+        const playerImg = document.getElementById('bPlayerImg');
+        playerImg.classList.remove('bounce-vertical');
+        document.getElementById('battleScreenModal').style.display = 'none';
+        checkEvolutionProgress();
     }
 </script>
 </body>
