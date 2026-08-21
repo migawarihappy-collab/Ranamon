@@ -273,10 +273,15 @@
         .fighter-img.adult-size {
             height: 90px;
         }
-        /* バトルアニメーション用クラス */
+
+        /* 向き調整・アニメーション用クラス */
         .facing-right {
             transform: scaleX(-1);
         }
+        .facing-left {
+            transform: scaleX(1);
+        }
+
         .shake-horizontal {
             animation: shakeHoriz 0.4s ease-in-out;
         }
@@ -285,17 +290,17 @@
         }
 
         @keyframes shakeHoriz {
-            0% { transform: translateX(0); }
-            20% { transform: translateX(-12px); }
-            40% { transform: translateX(12px); }
-            60% { transform: translateX(-8px); }
-            80% { transform: translateX(8px); }
-            100% { transform: translateX(0); }
+            0% { transform: translateX(0) scaleX(-1); }
+            20% { transform: translateX(-12px) scaleX(-1); }
+            40% { transform: translateX(12px) scaleX(-1); }
+            60% { transform: translateX(-8px) scaleX(-1); }
+            80% { transform: translateX(8px) scaleX(-1); }
+            100% { transform: translateX(0) scaleX(-1); }
         }
 
         @keyframes bounceVert {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-15px); }
+            0% { transform: translateY(0) scaleX(-1); }
+            100% { transform: translateY(-15px) scaleX(-1); }
         }
 
         .hp-bar-bg {
@@ -557,13 +562,13 @@
         </div>
     </div>
 
-    <!-- バトル対戦画面モーダル -->
+    <!-- バトル実行画面モーダル -->
     <div id="battleScreenModal" class="modal-overlay" style="display: none;">
         <div class="battle-screen-box">
             <div style="font-size: 14px; color: #ff4444; font-weight: bold; text-align: center; font-family: 'DotGothic16', sans-serif;">⚔️ ネットバトル ⚔️</div>
             
             <div class="battle-arena">
-                <!-- プレイヤー側 (右向き＝scaleX(-1)で敵を向く) -->
+                <!-- プレイヤー側 -->
                 <div class="fighter-box">
                     <div id="bPlayerName" style="font-size: 11px; font-family: 'DotGothic16', sans-serif;">---</div>
                     <img id="bPlayerImg" class="fighter-img facing-right" src="" alt="player">
@@ -573,10 +578,10 @@
 
                 <div style="font-size: 18px; font-weight: bold; color: #ff4444;">VS</div>
 
-                <!-- 敵側 (左向き＝通常) -->
+                <!-- 敵側 -->
                 <div class="fighter-box">
                     <div id="bEnemyName" style="font-size: 11px; font-family: 'DotGothic16', sans-serif;">---</div>
-                    <img id="bEnemyImg" class="fighter-img" src="" alt="enemy">
+                    <img id="bEnemyImg" class="fighter-img facing-left" src="" alt="enemy">
                     <div class="hp-bar-bg"><div id="bEnemyHpBar" class="hp-bar-fill"></div></div>
                     <div id="bEnemyHpText" style="font-size: 10px; margin-top:2px;">HP: 0/0</div>
                 </div>
@@ -668,20 +673,18 @@
     // --- 状態変数 ---
     let talkCount = 0;          
     let careCount = 0;          
-    let talkForBattleCount = 0; // 会話カウント（3回でバトル解放用）
-    let battleTickets = 0;       // バトル可能回数
+    let talkForBattleCount = 0; 
+    let battleTickets = 0;       
     let isPerformingAction = false; 
     let currentForm = 'zurumon'; 
     let currentPersonalityKey = '';
     let emotionCounts = { happy: 0, angry: 0, sad: 0, normal: 0 };
 
-    // 世代ごとのリスト定義
     const CHILD_DIGIMONS = ['kaimon', 'jerrymon', 'ganimon', 'gizamon'];
     const ADULT_DIGIMONS = ['gesomon', 'teslajerrymon', 'ebidramon', 'lanamon'];
     const PERFECT_DIGIMONS = ['hmon', 'tetismon', 'mdmon', 'karumaramon'];
     const ULTIMATE_DIGIMONS = ['marine', 'afmon', 'kutiramon', 'emarmeymon'];
 
-    // 表示名マップ
     const DIGIMON_NAMES = {
         zurumon: "ズルモン", pagumon: "パグモン",
         kaimon: "シャコモン", jerrymon: "ジェリーモン", ganimon: "ガニモン", gizamon: "ギザモン",
@@ -690,7 +693,6 @@
         marine: "マリンエンジェモン", afmon: "アンフィモン", kutiramon: "クティーラモン", emarmeymon: "エンシェントマーメイモン"
     };
 
-    // ステータス定義
     const DIGIMON_DATA = {
         zurumon:     { type: "フリー", baseHp: 30, baseAtk: 5, baseSpAtk: 5, baseDef: 5, baseSpd: 5 },
         pagumon:     { type: "フリー", baseHp: 50, baseAtk: 10, baseSpAtk: 10, baseDef: 8, baseSpd: 8 },
@@ -744,7 +746,6 @@
         shy: { name: "シャイ", greetings: [`あ…えっと…{NAME}さん…っ！こ、こんにちは…！`], prompt: `【性格: シャイ】内気で人見知りな性格です。` }
     };
 
-    // モーダル関連
     function toggleStatusModal(show) {
         const modal = document.getElementById('statusModal');
         if (show) {
@@ -1127,7 +1128,6 @@ ${pInfo ? pInfo.prompt : ""}
             talkCount++;
             if (careCount < 5) careCount++;
 
-            // 3回会話ごとにバトル権付与
             talkForBattleCount++;
             if (talkForBattleCount >= 3) {
                 talkForBattleCount = 0;
@@ -1297,7 +1297,7 @@ ${pInfo ? pInfo.prompt : ""}
 
     function startBattle(difficulty) {
         if (battleTickets <= 0) return;
-        battleTickets--; // バトル権消費
+        battleTickets--;
         updateBattleButtonState();
         saveData();
 
@@ -1335,7 +1335,7 @@ ${pInfo ? pInfo.prompt : ""}
 
         document.getElementById('bEnemyName').innerText = `${enemy.name} (${enemy.type})`;
         enemy.imgEl.src = `${enemy.formKey}_normal.gif`;
-        enemy.imgEl.className = "fighter-img" + ((ADULT_DIGIMONS.includes(enemy.formKey) || PERFECT_DIGIMONS.includes(enemy.formKey) || ULTIMATE_DIGIMONS.includes(enemy.formKey)) ? " adult-size" : "");
+        enemy.imgEl.className = "fighter-img facing-left" + ((ADULT_DIGIMONS.includes(enemy.formKey) || PERFECT_DIGIMONS.includes(enemy.formKey) || ULTIMATE_DIGIMONS.includes(enemy.formKey)) ? " adult-size" : "");
 
         document.getElementById('battleCloseBtn').style.display = 'none';
         document.getElementById('battleScreenModal').style.display = 'flex';
@@ -1362,11 +1362,9 @@ ${pInfo ? pInfo.prompt : ""}
                 first = enemy; second = player;
             }
 
-            // 1人目の攻撃
             await performBattleTurn(first, second, logBox);
             updateHpUI(player, enemy);
 
-            // 2人目の反撃（生存していれば）
             if (second.hp > 0) {
                 await performBattleTurn(second, first, logBox);
                 updateHpUI(player, enemy);
@@ -1377,39 +1375,30 @@ ${pInfo ? pInfo.prompt : ""}
         }, 2200);
     }
 
-    // アニメーションを伴う攻撃処理（方向修正版）
     function performBattleTurn(attacker, defender, logBox) {
         return new Promise(resolve => {
             const isSpecial = Math.random() < 0.5;
             const attackVal = isSpecial ? attacker.spAtk : attacker.atk;
             const attackName = isSpecial ? "特殊攻撃" : "物理攻撃";
 
-            let damage = Math.max(5, attackVal - Math.floor(defender.def / 2));
+            // 特殊攻撃(isSpecial=true)の場合は相手の特攻(spAtk)で軽減、物理攻撃は相手の防御(def)で軽減
+            const defenseVal = isSpecial ? defender.spAtk : defender.def;
+            let damage = Math.max(5, attackVal - Math.floor(defenseVal / 2));
             damage = Math.floor(damage * (0.9 + Math.random() * 0.2));
 
-            // プレイヤー側（左側）かどうかの判定クラス
-            const facingClass = attacker.isPlayer ? " facing-right" : "";
-            const defenderFacingClass = defender.isPlayer ? " facing-right" : "";
-
-            // 【演出1】攻撃側: angry.gif + 横揺れ (プレイヤー側なら右向き反転を保持)
+            // 攻撃演出
             attacker.imgEl.src = `${attacker.formKey}_angry.gif`;
-            attacker.imgEl.className = `fighter-img${facingClass} shake-horizontal` + 
-                ((ADULT_DIGIMONS.includes(attacker.formKey) || PERFECT_DIGIMONS.includes(attacker.formKey) || ULTIMATE_DIGIMONS.includes(attacker.formKey)) ? " adult-size" : "");
+            attacker.imgEl.classList.add('shake-horizontal');
 
             logBox.innerText += `${attacker.name} の ${attackName}！\n`;
 
             setTimeout(() => {
-                // 攻撃アニメーション終了時、元の通常姿へ
-                attacker.imgEl.className = `fighter-img${facingClass}` + 
-                    ((ADULT_DIGIMONS.includes(attacker.formKey) || PERFECT_DIGIMONS.includes(attacker.formKey) || ULTIMATE_DIGIMONS.includes(attacker.formKey)) ? " adult-size" : "");
+                attacker.imgEl.classList.remove('shake-horizontal');
                 attacker.imgEl.src = `${attacker.formKey}_normal.gif`;
 
-                // 【演出2】被弾側: sad.gif + ダメージ計算
+                // 被弾演出
                 defender.hp = Math.max(0, defender.hp - damage);
                 defender.imgEl.src = `${defender.formKey}_sad.gif`;
-                defender.imgEl.className = `fighter-img${defenderFacingClass}` + 
-                    ((ADULT_DIGIMONS.includes(defender.formKey) || PERFECT_DIGIMONS.includes(defender.formKey) || ULTIMATE_DIGIMONS.includes(defender.formKey)) ? " adult-size" : "");
-                
                 logBox.innerText += `${defender.name} に ${damage} ダメージ！\n`;
 
                 setTimeout(() => {
@@ -1438,7 +1427,6 @@ ${pInfo ? pInfo.prompt : ""}
         const rewardAmount = difficulty * 2;
 
         if (player.hp > 0) {
-            // 勝利演出：自デジモン happy.gif ＋ 縦揺れ / 敵デジモン sad.gif
             player.imgEl.src = `${player.formKey}_happy.gif`;
             player.imgEl.classList.add('bounce-vertical');
             enemy.imgEl.src = `${enemy.formKey}_sad.gif`;
@@ -1450,7 +1438,6 @@ ${pInfo ? pInfo.prompt : ""}
             emotionCounts.sad += rewardAmount;
             saveData();
         } else {
-            // 敗北演出：自デジモン sad.gif / 敵デジモン happy.gif
             player.imgEl.src = `${player.formKey}_sad.gif`;
             enemy.imgEl.src = `${enemy.formKey}_happy.gif`;
 
